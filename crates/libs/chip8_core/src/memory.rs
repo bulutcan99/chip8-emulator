@@ -20,26 +20,26 @@ pub struct Memory {
 	pub ram: [u8; RAM_SIZE],
 
 	// The stack allows for up to *STACK_SIZE* nested subroutines.
-	pub(crate) stack: [u16; STACK_SIZE],
+	pub stack: [u16; STACK_SIZE],
 
 	// Variable register; General purpose registers.
-	v_reg: [u8; NUM_REGS],
+	pub v_reg: [u8; NUM_REGS],
 
 	// Index register; acts as a pointer for accessing and manipulating memory
-	i_reg: u16,
+	pub i_reg: u16,
 
 	// Stack pointer; used to point to the top level of the stack.
-	pub(crate) sp: u8,
+	pub sp: u8,
 
 	// Program counter; stores the memory of the current executed instruction.
-	pub(crate) pc: u16,
+	pub pc: u16,
 
 	// Delay timer; if non-zero (activated), will decrease by 1 at *REFRESH_RATE*
 	// until reaches zero (deactivated).
-	dt: u8,
+	pub dt: u8,
 
 	// Sound timer; if non-zero (activated) sounds the buzzer sound.
-	st: u8,
+	pub st: u8,
 }
 
 impl Memory {
