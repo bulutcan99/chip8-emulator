@@ -3,5 +3,13 @@
 version = 3
 
 [[package]]
-name = "the-game"
+name = "chip8_core"
+version = "0.1.0"
+
+[[package]]
+name = "desktop"
+version = "0.1.0"
+
+[[package]]
+name = "web"
 version = "0.1.0"

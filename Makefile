@@ -1,8 +1,8 @@
 # VARIABLES
-BINARY_NAME := matchmaker
+BINARY_NAME := chip8
 HTTP_MAIN_PACKAGE_PATH := src/http
 MIGRATION_FOLDER := migrations
-DB_URL := postgres://bulutgocer:pass@localhost:5432/matchmaker?sslmode=disable
+DB_URL := postgres://bulutgocer:pass@localhost:5432/chip8?sslmode=disable
 
 # DOCUMENTATION
 ## Database Documentation
