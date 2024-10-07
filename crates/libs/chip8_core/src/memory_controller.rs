@@ -33,7 +33,7 @@ impl MemoryController {
 	}
 
 	pub fn init_ram(&mut self, rom_path: &str) {
-		self.load_rom(rom_path);
+		self.load_rom_file(rom_path);
 		self.load_hex_digits();
 	}
 
