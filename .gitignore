@@ -40,5 +40,5 @@ Temporary Items
 
 # Environment variables
 .env
-/configs/development.yaml
+/configs/config.yaml
 /configs/production.yaml
