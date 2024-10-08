@@ -1,4 +1,5 @@
 use crate::core::memory::Memory;
+use anyhow::{anyhow, Error};
 use std::fs::File;
 use std::io::Read;
 
@@ -32,61 +33,38 @@ impl MemoryController {
 		}
 	}
 
-	pub fn init_ram(&mut self, rom_path: &str) {
-		self.load_rom_file(rom_path);
-		self.load_hex_digits();
+	pub fn init_ram(&mut self, rom_path: &str) -> Result<(), Error> {
+		self.load_rom_file(rom_path)?;
+		self.load_hex_digits()?;
+		Ok(())
 	}
 
 	pub fn get_ram(&self) -> [u8; 4096] {
 		self.memory.ram
 	}
 
-	pub fn set_ram(&mut self, index: usize, val: u8) {
+	pub fn set_to_ram(&mut self, index: usize, val: u8) -> Result<(), Error> {
+		if index >= self.memory.ram.len() {
+			return Err(anyhow!("Index out of bounds for RAM!"));
+		}
 		self.memory.ram[index] = val;
+		Ok(())
 	}
 
-	pub fn get_v(&mut self, index: u8) -> u8 {
-		match index {
-			0 => self.memory.v_reg[0],
-			1 => self.memory.v_reg[1],
-			2 => self.memory.v_reg[2],
-			3 => self.memory.v_reg[3],
-			4 => self.memory.v_reg[4],
-			5 => self.memory.v_reg[5],
-			6 => self.memory.v_reg[6],
-			7 => self.memory.v_reg[7],
-			8 => self.memory.v_reg[8],
-			9 => self.memory.v_reg[9],
-			0xa => self.memory.v_reg[10],
-			0xb => self.memory.v_reg[11],
-			0xc => self.memory.v_reg[12],
-			0xd => self.memory.v_reg[13],
-			0xe => self.memory.v_reg[14],
-			0xf => self.memory.v_reg[15],
-			_ => 0
+
+	pub fn get_v(&self, index: u8) -> Result<u8, Error> {
+		if index > 0xF {
+			return Err(anyhow!("Index out of bounds for V register!"));
 		}
+		Ok(self.memory.v_reg[index as usize])
 	}
 
-	pub fn set_v(&mut self, index: u8, val: u8) {
-		match index {
-			0 => self.memory.v_reg[0] = val,
-			1 => self.memory.v_reg[1] = val,
-			2 => self.memory.v_reg[2] = val,
-			3 => self.memory.v_reg[3] = val,
-			4 => self.memory.v_reg[4] = val,
-			5 => self.memory.v_reg[5] = val,
-			6 => self.memory.v_reg[6] = val,
-			7 => self.memory.v_reg[7] = val,
-			8 => self.memory.v_reg[8] = val,
-			9 => self.memory.v_reg[9] = val,
-			0xa => self.memory.v_reg[10] = val,
-			0xb => self.memory.v_reg[11] = val,
-			0xc => self.memory.v_reg[12] = val,
-			0xd => self.memory.v_reg[13] = val,
-			0xe => self.memory.v_reg[14] = val,
-			0xf => self.memory.v_reg[15] = val,
-			_ => ()
+	pub fn set_v(&mut self, index: u8, val: u8) -> Result<(), Error> {
+		if index > 0xF {
+			return Err(anyhow!("Index out of bounds for V register!"));
 		}
+		self.memory.v_reg[index as usize] = val;
+		Ok(())
 	}
 
 	pub fn get_dt(&self) -> u8 {
@@ -146,30 +124,52 @@ impl MemoryController {
 		self.memory.i_reg += val;
 	}
 
-	pub fn stack_pop(&mut self) {
+
+	pub fn stack_pop(&mut self) -> Result<(), Error> {
+		if self.memory.sp == 0 {
+			return Err(anyhow!("Stack underflow: No more elements to pop!"));
+		}
+
 		self.memory.pc = self.memory.stack[(self.memory.sp - 1) as usize];
 		self.memory.stack[(self.memory.sp - 1) as usize] = 0;
 		self.memory.sp -= 1;
+
+		Ok(())
 	}
 
-	pub fn stack_push(&mut self, new_pc_addr: u16) {
+	pub fn stack_push(&mut self, new_pc_addr: u16) -> Result<(), Error> {
+		if self.memory.sp >= self.memory.stack.len() as u8 {
+			return Err(anyhow!("Stack overflow: No more space to push new element!"));
+		}
+
 		self.memory.sp += 1;
 		self.memory.stack[(self.memory.sp - 1) as usize] = self.memory.pc;
-		self.memory.pc = new_pc_addr
+		self.memory.pc = new_pc_addr;
+
+		Ok(())
 	}
 
-	fn load_hex_digits(&mut self) {
+	pub fn load_hex_digits(&mut self) -> Result<(), Error> {
+		if HEX_DIGITS.len() > self.memory.ram.len() {
+			return Err(anyhow!("HEX_DIGITS exceeds RAM size!"));
+		}
+
 		for i in 0..HEX_DIGITS.len() {
 			self.memory.ram[i] = HEX_DIGITS[i];
 		}
+
+		Ok(())
 	}
 
-	fn load_rom_file(&mut self, path: &str) {
+	fn load_rom_file(&mut self, path: &str) -> Result<(), Error> {
 		let mut byte_vec: Vec<u8> = Vec::new();
-		File::open(path).unwrap().read_to_end(&mut byte_vec).unwrap();
+		File::open(path)?.read_to_end(&mut byte_vec)?;
+
 		// 4096 (RAM size) - 512 (Reserved RAM)
 		if byte_vec.len() > 3584 {
-			panic!("The selected ROM size will overflow beyond the limit of RAM!")
+			return Err(anyhow!("The selected ROM size will overflow beyond the limit of RAM!"));
 		}
+
+		Ok(())
 	}
 }
