@@ -24,11 +24,11 @@ Some videos of it can be found here: https://www.youtube.com/c/RodrigoCucick
 __Macro features:__
 |Feature|Implemented?|
 |--|--|
-|Instructions (CPU)|Yes|
+|Instructions (CPU)|No|
 |Memory|Yes|
-|Input|Yes|
-|Display|Yes|
-|Audio (buzzer)|Yes|
+|Input|No|
+|Display|No|
+|Audio (buzzer)|No|
 
 __Individual instructions:__
 |Instruction|Implemented?|
