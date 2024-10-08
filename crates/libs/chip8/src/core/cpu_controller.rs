@@ -20,7 +20,7 @@ pub struct CpuController {
 	// If true, shift instructions will involve register VY, otherwise they will use VX.
 	bit_shift_instructions_use_vy: bool,
 
-	// Determines whether store/read instructions modify the I register (index register).
+	// Determines whether store/read instructions modify the I-Register (index register).
 	// If true, I register will be modified by store and read instructions.
 	store_read_instructions_change_i: bool,
 }
