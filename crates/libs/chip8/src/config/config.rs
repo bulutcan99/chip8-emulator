@@ -38,9 +38,7 @@ pub struct LoggerFileAppender {
 	pub max_log_files: usize,
 }
 
-/// EmuSettings configuration (read from YAML)
-///
-/// This struct defines the emulator's settings, now fetched from a YAML file
+/// EmuSettings configuration
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct EmuSettings {
 	pub scale: u32,
