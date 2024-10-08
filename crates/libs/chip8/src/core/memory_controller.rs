@@ -2,6 +2,7 @@ use crate::core::memory::Memory;
 use anyhow::{anyhow, Error};
 use std::fs::File;
 use std::io::Read;
+use tracing::{error, info};
 
 const HEX_DIGITS: [u8; 80] = [
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -34,6 +35,7 @@ impl MemoryController {
 	}
 
 	pub fn init_ram(&mut self, rom_path: &str) -> Result<(), Error> {
+		info!("Initializing RAM with ROM file: {}", rom_path);
 		self.load_rom_file(rom_path)?;
 		self.load_hex_digits()?;
 		Ok(())
@@ -45,6 +47,7 @@ impl MemoryController {
 
 	pub fn set_to_ram(&mut self, index: usize, val: u8) -> Result<(), Error> {
 		if index >= self.memory.ram.len() {
+			error!("Index out of bounds for RAM!");
 			return Err(anyhow!("Index out of bounds for RAM!"));
 		}
 		self.memory.ram[index] = val;
@@ -54,6 +57,7 @@ impl MemoryController {
 
 	pub fn get_v(&self, index: u8) -> Result<u8, Error> {
 		if index > 0xF {
+			error!("Index out of range while getting V-Reg");
 			return Err(anyhow!("Index out of bounds for V register!"));
 		}
 		Ok(self.memory.v_reg[index as usize])
@@ -61,6 +65,7 @@ impl MemoryController {
 
 	pub fn set_v(&mut self, index: u8, val: u8) -> Result<(), Error> {
 		if index > 0xF {
+			error!("Index out of range while setting V-Reg");
 			return Err(anyhow!("Index out of bounds for V register!"));
 		}
 		self.memory.v_reg[index as usize] = val;
@@ -127,6 +132,7 @@ impl MemoryController {
 
 	pub fn stack_pop(&mut self) -> Result<(), Error> {
 		if self.memory.sp == 0 {
+			error!("Stack underflowed!");
 			return Err(anyhow!("Stack underflow: No more elements to pop!"));
 		}
 
@@ -150,7 +156,9 @@ impl MemoryController {
 	}
 
 	pub fn load_hex_digits(&mut self) -> Result<(), Error> {
+		info!("Loading HEX_DIGITS into RAM");
 		if HEX_DIGITS.len() > self.memory.ram.len() {
+			error!("HEX_DIGITS exceeds RAM size!");
 			return Err(anyhow!("HEX_DIGITS exceeds RAM size!"));
 		}
 
@@ -162,11 +170,18 @@ impl MemoryController {
 	}
 
 	fn load_rom_file(&mut self, path: &str) -> Result<(), Error> {
+		info!("Loading ROM file from path: {}", path);
 		let mut byte_vec: Vec<u8> = Vec::new();
-		File::open(path)?.read_to_end(&mut byte_vec)?;
+		File::open(path)
+			.and_then(|mut file| file.read_to_end(&mut byte_vec))
+			.map_err(|e| {
+				error!("Failed to read ROM file: {}", e);
+				anyhow!("Failed to read ROM file: {}", e)
+			})?;
 
 		// 4096 (RAM size) - 512 (Reserved RAM)
 		if byte_vec.len() > 3584 {
+			error!("The selected ROM size will overflow beyond the limit of RAM!");
 			return Err(anyhow!("The selected ROM size will overflow beyond the limit of RAM!"));
 		}
 
