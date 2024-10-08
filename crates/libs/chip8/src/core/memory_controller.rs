@@ -1,4 +1,4 @@
-use crate::memory::Memory;
+use crate::core::memory::Memory;
 use std::fs::File;
 use std::io::Read;
 
