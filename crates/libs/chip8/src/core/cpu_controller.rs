@@ -260,4 +260,7 @@ impl CpuController {
 
 		Ok(())
 	}
+
+	// 8XY5 - SUB VX, VY
+
 }
