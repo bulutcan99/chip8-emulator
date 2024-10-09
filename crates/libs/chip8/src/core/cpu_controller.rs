@@ -147,14 +147,117 @@ impl CpuController {
 		}
 	}
 
-	// 3XNN - SE VX == NN
+	// 3XNN - SE VX
 	fn skip_equal_vx_byte(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
 		let x = self.x();
-		let second_byte = self.second_byte();
 		let v = mem_ctr.get_v(x)?;
+		let second_byte = self.second_byte();
 		if v == second_byte {
 			self.skip_next_instruction(mem_ctr)
 		}
+		Ok(())
+	}
+
+	// 4XNN - SNE VX
+	fn skip_not_equal_vx_byte(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let v = mem_ctr.get_v(x)?;
+		let second_byte = self.second_byte();
+		if v != second_byte {
+			self.skip_next_instruction(mem_ctr)
+		}
+		Ok(())
+	}
+
+	// 5XY0 - SE VX == VY
+	fn skip_equal_vx_vy(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let vx = mem_ctr.get_v(x)?;
+		let y = self.x();
+		let vy = mem_ctr.get_v(y)?;
+		if vx == vy {
+			self.skip_next_instruction(mem_ctr)
+		}
+		Ok(())
+	}
+
+	// 6XNN - LD VX with byte
+	fn load_vx_with_byte(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let second_byte = self.second_byte();
+		mem_ctr.set_v(x, second_byte)
+	}
+
+	// 7XNN - ADD VX, NN
+	fn add_vx_with_byte(&mut self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let nn = self.second_byte();
+
+		let vx = mem_ctr.get_v(x)?;
+		let result = vx.wrapping_add(nn);
+
+		mem_ctr.set_v(x, result)?;
+
+		Ok(())
+	}
+
+	// 8XY0 - LD VX with VY
+	fn load_vx_with_vy(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let y = self.x();
+		let vy = mem_ctr.get_v(y)?;
+		mem_ctr.set_v(x, vy)?;
+		Ok(())
+	}
+
+	// 8XY1 - LD VX with (VX or VY)
+	fn load_vx_with_vx_or_vy(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let y = self.y();
+		let vx = mem_ctr.get_v(x)?;
+		let vy = mem_ctr.get_v(y)?;
+		mem_ctr.set_v(x, vx | vy)?;
+		Ok(())
+	}
+
+	// 8XY2 - LD VX with (VX and VY)
+	fn load_vx_with_vx_and_vy(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let y = self.y();
+		let vx = mem_ctr.get_v(x)?;
+		let vy = mem_ctr.get_v(y)?;
+		mem_ctr.set_v(x, vx & vy)?;
+		Ok(())
+	}
+
+	// 8XY3 - LD VX with (VX xor VY)
+	fn load_vx_with_vx_xor_vy(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let y = self.y();
+		let vx = mem_ctr.get_v(x)?;
+		let vy = mem_ctr.get_v(y)?;
+		mem_ctr.set_v(x, vx ^ vy)?;
+		Ok(())
+	}
+
+	// 8XY4 - ADD VX, VY
+	fn add_vx_with_vy(&mut self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let y = self.y();
+
+		let vx = mem_ctr.get_v(x)?;
+		let vy = mem_ctr.get_v(y)?;
+
+		let (result, overflow) = vx.overflowing_add(vy);
+
+		if overflow {
+			mem_ctr.set_v(0xF, 1)?
+		} else {
+			mem_ctr.set_v(0xF, 0)?;
+		}
+
+		mem_ctr.set_v(x, result)?;
+
 		Ok(())
 	}
 }

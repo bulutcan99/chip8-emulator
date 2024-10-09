@@ -44,15 +44,15 @@ __Individual instructions:__
 |`1NNN` - JP addr|Yes|
 |`2NNN` - CALL addr|Yes|
 |`3XNN` - SE VX, byte|Yes|
-|`4XKK` - SNE VX, byte|Not used|
-|`5XY0` - SE VX, VY|Not used|
-|`6XKK` - LD VX, byte|Not used|
-|`7XKK` - ADD VX, byte|Not used|
-|`8XY0` - LD VX, VY|Not used|
-|`8XY1` - OR VX, VY|Not used|
-|`8XY2` - AND VX, VY|Not used|
-|`8XY3` - XOR VX, VY|Not used|
-|`8XY4` - ADD VX, VY|Not used|
+|`4XKK` - SNE VX, byte|Yes|
+|`5XY0` - SE VX, VY|Yes|
+|`6XKK` - LD VX, byte|Yes|
+|`7XKK` - ADD VX, byte|Yes|
+|`8XY0` - LD VX, VY|Yes|
+|`8XY1` - OR VX, VY|Yes|
+|`8XY2` - AND VX, VY|Yes|
+|`8XY3` - XOR VX, VY|Yes|
+|`8XY4` - ADD VX, VY|Yes|
 |`8XY5` - SUB VX, VY|Not used|
 |`8XY6` - SHR VX {, VY}|Not used|
 |`8XY7` - SUBN VX, VY|Not used|
