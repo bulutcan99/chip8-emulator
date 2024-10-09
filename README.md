@@ -7,6 +7,7 @@
 </div>
 
 # Chip-8 Emulator
+
 A Chip-8 emulator written in Rust that uses SDL2.
 
 __Sources:__
@@ -14,10 +15,13 @@ __Sources:__
 |--|--|
 |http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#8xy3|Chip-8 technical information.|
 |https://github.com/rodrigoCucick/rusted-chip8|Chip-8 coding reference while developing the Chip-8 emulator in Rust.|
-|https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set|Another Chip-8 technical reference with some additional information.|
+|https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set|Another Chip-8 technical reference with some
+additional information.|
 
 # Current Features
-As it is, the emulator is fully functional and capable of executing any Chip-8 game based on the original instruction set.
+
+As it is, the emulator is fully functional and capable of executing any Chip-8 game based on the original instruction
+set.
 
 Some videos of it can be found here: https://www.youtube.com/c/RodrigoCucick
 
@@ -33,13 +37,13 @@ __Macro features:__
 __Individual instructions:__
 |Instruction|Implemented?|
 |--|--|
-|`0000` - NOP|Not used|
+|`0000` - NOP|Yes|
 |`00E0` - CLS|Not used|
-|`00EE` - RET|Not used|
+|`00EE` - RET|Yes|
 |`0NNN` - SYS addr|Not used|
-|`1NNN` - JP addr|Not used|
-|`2NNN` - CALL addr|Not used|
-|`3XKK` - SE VX, byte|Not used|
+|`1NNN` - JP addr|Yes|
+|`2NNN` - CALL addr|Yes|
+|`3XNN` - SE VX, byte|Yes|
 |`4XKK` - SNE VX, byte|Not used|
 |`5XY0` - SE VX, VY|Not used|
 |`6XKK` - LD VX, byte|Not used|
@@ -71,6 +75,7 @@ __Individual instructions:__
 |`FX65` - LD VX, [I]|Not used|
 
 # Keyboard
+
 The keyboard inputs are mapped to the following keys:
 
 __Emulator layout__:
@@ -90,7 +95,10 @@ __Original ASCII layout (_for reference only_):__
 |A|0|B|F|
 
 # Settings
-The emulator also has an external configuration file called `config.yaml`, where it is possible to adjust some settings like:
+
+The emulator also has an external configuration file called `config.yaml`, where it is possible to adjust some settings
+like:
+
 1. Video resolution scale.
 2. Instruction cycles per frame.
 3. Color (background and pixel).

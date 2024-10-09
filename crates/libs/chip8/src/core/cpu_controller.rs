@@ -1,6 +1,7 @@
 use crate::core::memory_controller::MemoryController;
 use crate::shared::data::bit::BitManipulation;
-use tracing::info;
+use anyhow::{anyhow, Error};
+use tracing::{error, info};
 
 enum CpuState {
 	Halted,
@@ -33,7 +34,7 @@ impl CpuController {
 		cycles_per_frame: u32,
 		bit_shift_instructions_use_vy: bool,
 		store_read_instructions_change_i: bool,
-	) -> Result<Self> {
+	) -> Result<Self, Error> {
 		// Attempt to get the program counter (PC) and read two bytes
 		let lower_addr = mem_ctrl.get_pc() as usize;
 		let ram = mem_ctrl.get_ram();
@@ -95,6 +96,17 @@ impl CpuController {
 		self.cycles_per_frame
 	}
 
+	fn extract_12bit_address(&self) -> u16 {
+		let x = self.x();
+		let y = self.y();
+		let fourth = self.fourth_nibble();
+		BitManipulation::combine_nibbles_to_16bit_address(x, y, fourth)
+	}
+
+	fn skip_next_instruction(&self, mem_ctr: &mut MemoryController) {
+		mem_ctr.inc_pc_by(2)
+	}
+
 	// **INSTRUCTIONS**
 
 	// 0000 - NOP
@@ -104,9 +116,45 @@ impl CpuController {
 
 	// 00E0 - CLS -> will implement after sdl
 
-	// 00EE - RET
-	fn return_from_subroutine(&self, mem_ctr: &mut MemoryController) {
-		// Works like return -> returned to the upper func.
-		mem_ctr.stack_pop().unwrap()
+	// 00EE - RET (Return from Subroutine)
+	fn return_from_subroutine(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		// Return to the previous function by popping the stack.
+		mem_ctr.stack_pop().map_err(|err| {
+			error!("Failed to return from subroutine: {:?}", err);
+			err
+		})
+	}
+
+	// 1NNN - JMP NNN (Jump to Address NNN)
+	fn jump_to_address(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let address = self.extract_12bit_address();
+		mem_ctr.set_pc(address);
+		Ok(())
+	}
+
+	// 2NNN - CALL NNN (Call Address NNN)
+	fn call_address(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let address = self.extract_12bit_address();
+		match mem_ctr.stack_push(mem_ctr.get_pc()) {
+			Ok(_) => {
+				mem_ctr.set_pc(address);
+				Ok(())
+			}
+			Err(err) => {
+				error!("Failed to call subroutine at address: {:X}, error: {:?}", address, err);
+				Err(err)
+			}
+		}
+	}
+
+	// 3XNN - SE VX == NN
+	fn skip_equal_vx_byte(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let second_byte = self.second_byte();
+		let v = mem_ctr.get_v(x)?;
+		if v == second_byte {
+			self.skip_next_instruction(mem_ctr)
+		}
+		Ok(())
 	}
 }
