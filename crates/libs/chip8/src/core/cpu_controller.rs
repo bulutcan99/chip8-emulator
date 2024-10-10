@@ -294,4 +294,7 @@ impl CpuController {
 
 		Ok(())
 	}
+
+	// 8XY7 - MINUS VX = VY-VX
+	fn minus_vx_from_vy(&self, mem_ctr: &mut MemoryController) -> Result<(), Error> {}
 }
