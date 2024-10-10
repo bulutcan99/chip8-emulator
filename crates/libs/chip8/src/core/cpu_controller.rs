@@ -262,5 +262,23 @@ impl CpuController {
 	}
 
 	// 8XY5 - SUB VX, VY
+	fn sub_vx_to_vy(&mut self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+		let x = self.x();
+		let y = self.y();
 
+		let vx = mem_ctr.get_v(x)?;
+		let vy = mem_ctr.get_v(y)?;
+
+		let (result, overflow) = vx.overflowing_sub(vy);
+
+		if overflow {
+			mem_ctr.set_v(0xF, 0)?;
+		} else {
+			mem_ctr.set_v(0xF, 1)?;
+		}
+
+		mem_ctr.set_v(x, result)?;
+
+		Ok(())
+	}
 }
