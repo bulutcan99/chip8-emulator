@@ -53,8 +53,8 @@ __Individual instructions:__
 |`8XY2` - AND VX, VY|Yes|
 |`8XY3` - XOR VX, VY|Yes|
 |`8XY4` - ADD VX, VY|Yes|
-|`8XY5` - SUB VX, VY|Not used|
-|`8XY6` - SHR VX {, VY}|Not used|
+|`8XY5` - SUB VX, VY|Yes|
+|`8XY6` - SHR VX {, VY}|Yes|
 |`8XY7` - SUBN VX, VY|Not used|
 |`8XYE` - SHL VX {, VY}|Not used|
 |`9XY0` - SNE VX, VY|Not used|
