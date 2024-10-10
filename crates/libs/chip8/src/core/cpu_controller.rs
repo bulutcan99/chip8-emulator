@@ -283,7 +283,7 @@ impl CpuController {
 	}
 
 	// 8XY6 - SHIFT VX (to the right) by 1
-	fn shif_vx_to_right(&mut self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
+	fn shift_vx_to_right(&mut self, mem_ctr: &mut MemoryController) -> Result<(), Error> {
 		let x = self.x();
 		let vx = mem_ctr.get_v(x)?;
 		let lsb = vx & 0b0000_0001;
