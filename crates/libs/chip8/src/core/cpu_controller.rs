@@ -183,7 +183,7 @@ impl CpuController {
 		Ok(())
 	}
 
-	// 6XNN - LD VX with byte
+	// 6XNN - LD VX (with byte)
 	fn load_vx_with_byte(&self, emu: &mut Emulator) -> Result<(), Error> {
 		let x = self.x();
 		let second_byte = self.second_byte();
@@ -203,7 +203,7 @@ impl CpuController {
 		Ok(())
 	}
 
-	// 8XY0 - LD VX with VY
+	// 8XY0 - LD VX (with VY)
 	fn load_vx_with_vy(&self, emu: &mut Emulator) -> Result<(), Error> {
 		let x = self.x();
 		let y = self.x();
@@ -212,7 +212,7 @@ impl CpuController {
 		Ok(())
 	}
 
-	// 8XY1 - LD VX with (VX or VY)
+	// 8XY1 - LD VX (with VX or VY)
 	fn load_vx_with_vx_or_vy(&self, emu: &mut Emulator) -> Result<(), Error> {
 		let x = self.x();
 		let y = self.y();
@@ -222,7 +222,7 @@ impl CpuController {
 		Ok(())
 	}
 
-	// 8XY2 - LD VX with (VX and VY)
+	// 8XY2 - LD VX (with VX and VY)
 	fn load_vx_with_vx_and_vy(&self, emu: &mut Emulator) -> Result<(), Error> {
 		let x = self.x();
 		let y = self.y();
@@ -232,7 +232,7 @@ impl CpuController {
 		Ok(())
 	}
 
-	// 8XY3 - LD VX with (VX xor VY)
+	// 8XY3 - LD VX (with VX xor VY)
 	fn load_vx_with_vx_xor_vy(&self, emu: &mut Emulator) -> Result<(), Error> {
 		let x = self.x();
 		let y = self.y();
@@ -315,6 +315,43 @@ impl CpuController {
 		}
 
 		emu.set_v(x, result)?;
+		Ok(())
+	}
+
+	// 8XYE - SHIFT VX (to the left) by 1
+	fn shift_vx_to_left(&self, emu: &mut Emulator) -> Result<(), Error> {
+		let x = self.x();
+		let vx = emu.get_v(x)?;
+		// Extract the MSB (8th bit) and shift it to the least-significant bit position
+		let msb = (vx & 0b10000000) >> 7;
+
+		emu.set_v(0xF, msb)?;
+
+		let result = vx << 1;
+
+		emu.set_v(x, result)?;
+
+		Ok(())
+	}
+
+	//9XY0 - SNE VX != VY
+	fn skip_not_equal_vx_vy(&self, emu: &mut Emulator) -> Result<(), Error> {
+		let x = self.x();
+		let vx = emu.get_v(x)?;
+
+		let y = self.y();
+		let vy = emu.get_v(y)?;
+
+		if vx != vy {
+			self.skip_next_instruction(emu);
+		}
+		Ok(())
+	}
+
+	// ANNN - LD I (with NNN)
+	fn load_i_with_nnn(&self, emu: &mut Emulator) -> Result<(), Error> {
+		let address = self.extract_12bit_address();
+		emu.set_i(address);
 		Ok(())
 	}
 }
