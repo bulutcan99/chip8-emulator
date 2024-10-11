@@ -15,8 +15,7 @@ __Sources:__
 |--|--|
 |http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#8xy3|Chip-8 technical information.|
 |https://github.com/rodrigoCucick/rusted-chip8|Chip-8 coding reference while developing the Chip-8 emulator in Rust.|
-|https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set|Another Chip-8 technical reference with some
-additional information.|
+|https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set|Another Chip-8 technical reference with some additional information.|
 
 # Current Features
 
