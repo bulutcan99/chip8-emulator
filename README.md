@@ -55,10 +55,10 @@ __Individual instructions:__
 |`8XY4` - ADD VX, VY|Yes|
 |`8XY5` - SUB VX, VY|Yes|
 |`8XY6` - SHR VX {, VY}|Yes|
-|`8XY7` - SUBN VX, VY|Not used|
-|`8XYE` - SHL VX {, VY}|Not used|
-|`9XY0` - SNE VX, VY|Not used|
-|`ANNN` - LD I, addr|Not used|
+|`8XY7` - SUBN VX, VY|Yes|
+|`8XYE` - SHL VX {, VY}|Yes|
+|`9XY0` - SNE VX, VY|Yes|
+|`ANNN` - LD I, addr|Yes|
 |`BNNN` - JP V0, addr|Not used|
 |`CXKK` - RND VX, byte|Not used|
 |`DXYN` - DRW VX, VY, nibble|Not used|
