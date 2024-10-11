@@ -1,6 +1,7 @@
 use crate::core::emulator::Emulator;
 use crate::shared::data::bit::BitManipulation;
 use anyhow::{anyhow, Error};
+use rand::Rng;
 use tracing::{error, info};
 
 enum CpuState {
@@ -352,6 +353,25 @@ impl CpuController {
 	fn load_i_with_nnn(&self, emu: &mut Emulator) -> Result<(), Error> {
 		let address = self.extract_12bit_address();
 		emu.set_i(address);
+		Ok(())
+	}
+
+	// BNNN - JP V0 (addr)
+	fn jump_to_address_plus_v0(&self, emu: &mut Emulator) -> Result<(), Error> {
+		let v0 = emu.get_v(0)?;
+		let address = self.extract_12bit_address();
+		let result = (v0 as u16) + address;
+		emu.set_pc(result);
+		Ok(())
+	}
+
+	// CXNN - LD VX (with random)
+	fn load_vx_with_random_number(&self, emu: &mut Emulator) -> Result<(), Error> {
+		let rnd = rand::thread_rng().gen_range(0..=255);
+		let second_byte = self.second_byte();
+		let result = second_byte & rnd;
+		let x = self.x();
+		emu.set_v(x, result)?;
 		Ok(())
 	}
 }

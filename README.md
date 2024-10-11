@@ -59,8 +59,8 @@ __Individual instructions:__
 |`8XYE` - SHL VX {, VY}|Yes|
 |`9XY0` - SNE VX, VY|Yes|
 |`ANNN` - LD I, addr|Yes|
-|`BNNN` - JP V0, addr|Not used|
-|`CXKK` - RND VX, byte|Not used|
+|`BNNN` - JP V0, addr|Yes|
+|`CXKK` - RND VX, byte|Yes|
 |`DXYN` - DRW VX, VY, nibble|Not used|
 |`EX9E` - SKP VX|Not used|
 |`EXA1` - SKNP VX|Not used|

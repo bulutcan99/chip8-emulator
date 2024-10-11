@@ -16,3 +16,4 @@ serde_yaml = "0.9.34+deprecated"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time"] }
 tracing-appender = "0.2.3"
 thiserror = "1.0.64"
+rand = "0.9.0-alpha.2"
