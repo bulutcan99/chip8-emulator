@@ -13,7 +13,7 @@ const REFRESH_RATE: usize = 60;
 // Chip-8 standard that the beginning of all Chip-8 programs will be loaded in starting at RAM address 0x200.
 const START_ADDR: u16 = 0x200;
 
-pub struct Memory {
+pub struct CHIP8 {
 	// Will address from 0x000 (0) to 0x1ff (511)
 	// ROM data will get after first 512 byte
 	// 4096 bytes total
@@ -42,7 +42,7 @@ pub struct Memory {
 	pub st: u8,
 }
 
-impl Memory {
+impl CHIP8 {
 	pub fn new() -> Self {
 		Self {
 			ram: [0; RAM_SIZE],
