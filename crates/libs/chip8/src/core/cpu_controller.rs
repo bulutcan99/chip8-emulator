@@ -1,8 +1,9 @@
 use crate::core::emulator::Emulator;
 use crate::shared::data::bit::BitManipulation;
 use anyhow::{anyhow, Error};
+use log::debug;
 use rand::Rng;
-use tracing::{error, info};
+use tracing::{debug, error, info};
 
 enum CpuState {
 	Halted,
@@ -110,11 +111,15 @@ impl CpuController {
 	// **INSTRUCTIONS**
 
 	// 0000 - NOP
-	fn no_operation(&self, emulator: &mut Emulator) {
-		info!("NOP executed: No operation performed.");
+	fn no_operation(&self, emu: &mut Emulator) {
+		debug!("NOP executed: No operation performed.");
 	}
 
 	// 00E0 - CLS -> will implement after sdl
+	fn clear_screen(&self, emu: &mut Emulator) {
+		emu.clear_screen();
+		debug!("Screen cleared!")
+	}
 
 	// 00EE - RET (Return from Subroutine)
 	fn return_from_subroutine(&self, emu: &mut Emulator) -> Result<(), Error> {
@@ -374,4 +379,7 @@ impl CpuController {
 		emu.set_v(x, result)?;
 		Ok(())
 	}
+
+	// DXYN - DRW Sprite
+	fn draw_sprite(&self, emu: &mut Emulator) -> Result<(), Error> {}
 }

@@ -1,4 +1,4 @@
-use crate::core::chip8::CHIP8;
+use crate::core::chip8::{CHIP8, SCREEN_HEIGHT, SCREEN_WIDTH};
 use anyhow::{anyhow, Error};
 use std::fs::File;
 use std::io::Read;
@@ -186,5 +186,9 @@ impl Emulator {
 		}
 
 		Ok(())
+	}
+
+	pub fn clear_screen(&mut self) {
+		self.chip8.display = [false; SCREEN_WIDTH * SCREEN_HEIGHT];
 	}
 }

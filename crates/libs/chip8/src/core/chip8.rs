@@ -13,6 +13,11 @@ const REFRESH_RATE: usize = 60;
 // Chip-8 standard that the beginning of all Chip-8 programs will be loaded in starting at RAM address 0x200.
 const START_ADDR: u16 = 0x200;
 
+// Default display resolution.
+pub const SCREEN_WIDTH: usize = 64;
+pub const SCREEN_HEIGHT: usize = 32;
+
+
 pub struct CHIP8 {
 	// Will address from 0x000 (0) to 0x1ff (511)
 	// ROM data will get after first 512 byte
@@ -40,20 +45,40 @@ pub struct CHIP8 {
 
 	// Sound timer; if non-zero (activated) sounds the buzzer sound.
 	pub st: u8,
+
+	// Display (64x32 pixels, true = pixel on, false = pixel off)
+	pub display: [bool; SCREEN_WIDTH * SCREEN_HEIGHT],
 }
 
 impl CHIP8 {
 	pub fn new() -> Self {
-		Self {
+		let mut new_chip8 = Self {
 			ram: [0; RAM_SIZE],
 			stack: [0; STACK_SIZE],
 			v_reg: [0; NUM_REGS],
 			i_reg: 0,
 			sp: 0,
-			pc: START_ADDR, // Default pc address for CHIP8
+			pc: START_ADDR,
 			dt: 0,
 			st: 0,
-		}
+			display: [false; SCREEN_WIDTH * SCREEN_HEIGHT],
+		};
+
+		new_chip8
+	}
+
+	pub fn reset(&mut self) {
+		self.ram = [0; RAM_SIZE];
+
+		self.stack = [0; STACK_SIZE];
+		self.v_reg = [0; NUM_REGS];
+		self.i_reg = 0;
+		self.sp = 0;
+		self.pc = START_ADDR;
+		self.dt = 0;
+		self.st = 0;
+
+		self.display = [false; SCREEN_WIDTH * SCREEN_HEIGHT];
 	}
 
 	fn get_reserved_memory(&self) -> &[u8] {
