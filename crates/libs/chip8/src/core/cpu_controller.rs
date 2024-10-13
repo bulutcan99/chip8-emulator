@@ -389,7 +389,7 @@ impl CpuController {
         let vy = emu.get_v(y)?;
 
         let height = self.fourth_nibble();
-        let mut collasion = false;
-        for byte_index in 0..height {}
+        let mut collision = false;
+        for ordinate in 0..height {}
     }
 }
