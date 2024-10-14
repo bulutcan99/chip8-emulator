@@ -114,6 +114,12 @@ impl Emulator {
         self.chip8.pc += val;
     }
 
+    pub fn dec_pc_by(&mut self, val: u16) {
+        if self.chip8.pc > 0 {
+            self.chip8.pc -= val;
+        }
+    }
+
     pub fn get_i(&self) -> u16 {
         self.chip8.i_reg
     }
@@ -194,5 +200,17 @@ impl Emulator {
     pub fn clear_screen(&mut self) {
         self.chip8.display = [false; SCREEN_WIDTH * SCREEN_HEIGHT];
     }
-}
 
+    pub fn is_key_pressed(&self, idx: u8) -> bool {
+        self.chip8.keys[idx as usize]
+    }
+
+    pub fn check_key_press(&self) -> Option<u8> {
+        for i in 0..16 {
+            if self.chip8.keys[i] {
+                return Some(i as u8);
+            }
+        }
+        None
+    }
+}

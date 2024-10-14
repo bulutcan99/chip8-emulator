@@ -109,6 +109,10 @@ impl CpuController {
         emu.inc_pc_by(2)
     }
 
+    fn rollback_instruction(&self, emu: &mut Emulator) {
+        emu.dec_pc_by(2)
+    }
+
     // **INSTRUCTIONS**
 
     // 0000 - NOP
@@ -410,5 +414,48 @@ impl CpuController {
         } else {
             emu.set_v(0xF, 0)
         }
+    }
+
+    // EX9E - SKP VX == key
+    fn skip_by_key(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+
+        let is_pressed = emu.is_key_pressed(vx);
+        if is_pressed {
+            self.skip_next_instruction(emu);
+        }
+        Ok(())
+    }
+
+    // EXA1 - SKP VX != key
+    fn skip_by_not_key(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+
+        let is_pressed = emu.is_key_pressed(vx);
+        if !is_pressed {
+            self.skip_next_instruction(emu);
+        }
+        Ok(())
+    }
+
+    // FX07 - LD VX (with DT)
+    fn load_vx_with_dt(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let dt = emu.get_dt();
+        emu.set_v(x, dt)
+    }
+
+    // FX0A - WT KEY (to VX)
+    fn wait_for_key(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        loop {
+            if let Some(key) = emu.check_key_press() {
+                emu.set_v(x, key)?;
+                break;
+            }
+        }
+        Ok(())
     }
 }

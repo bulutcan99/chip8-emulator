@@ -64,10 +64,10 @@ __Individual instructions:__
 |`BNNN` - JP V0, addr|Yes|
 |`CXKK` - RND VX, byte|Yes|
 |`DXYN` - DRW VX, VY, nibble|Yes|
-|`EX9E` - SKP VX|Not used|
-|`EXA1` - SKNP VX|Not used|
-|`FX07` - LD VX, DT|Not used|
-|`FX0A` - LD VX, K|Not used|
+|`EX9E` - SKP VX|Yes|
+|`EXA1` - SKNP VX|Yes|
+|`FX07` - LD VX, DT|Yes|
+|`FX0A` - LD VX, K|Yes|
 |`FX15` - LD DT, VX|Not used|
 |`FX18` - LD ST, VX|Not used|
 |`FX1E` - ADD I, VX|Not used|
