@@ -11,20 +11,22 @@
 A Chip-8 emulator written in Rust that uses SDL2.
 
 __Sources:__
+
 |Link|Information|
 |--|--|
-|http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#8xy3|Chip-8 technical information.|
-|https://github.com/rodrigoCucick/rusted-chip8|Chip-8 coding reference while developing the Chip-8 emulator in Rust.|
-|https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set|Another Chip-8 technical reference with some additional information.|
+|<http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#8xy3>|Chip-8 technical information.|
+|<https://github.com/rodrigoCucick/rusted-chip8>|Chip-8 coding reference while developing the Chip-8 emulator in Rust.|
+|<https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set>|Another Chip-8 technical reference with some additional information.|
 
 # Current Features
 
 As it is, the emulator is fully functional and capable of executing any Chip-8 game based on the original instruction
 set.
 
-Some videos of it can be found here: https://www.youtube.com/c/RodrigoCucick
+Some videos of it can be found here: <https://www.youtube.com/c/RodrigoCucick>
 
 __Macro features:__
+
 |Feature|Implemented?|
 |--|--|
 |Instructions (CPU)|No|
@@ -34,10 +36,11 @@ __Macro features:__
 |Audio (buzzer)|No|
 
 __Individual instructions:__
+
 |Instruction|Implemented?|
 |--|--|
 |`0000` - NOP|Yes|
-|`00E0` - CLS|Not used|
+|`00E0` - CLS|Yes|
 |`00EE` - RET|Yes|
 |`0NNN` - SYS addr|Not used|
 |`1NNN` - JP addr|Yes|
@@ -60,7 +63,7 @@ __Individual instructions:__
 |`ANNN` - LD I, addr|Yes|
 |`BNNN` - JP V0, addr|Yes|
 |`CXKK` - RND VX, byte|Yes|
-|`DXYN` - DRW VX, VY, nibble|Not used|
+|`DXYN` - DRW VX, VY, nibble|Yes|
 |`EX9E` - SKP VX|Not used|
 |`EXA1` - SKNP VX|Not used|
 |`FX07` - LD VX, DT|Not used|
@@ -78,6 +81,7 @@ __Individual instructions:__
 The keyboard inputs are mapped to the following keys:
 
 __Emulator layout__:
+
 |||||
 |--|--|--|--|
 |1|2|3|4|
@@ -86,11 +90,12 @@ __Emulator layout__:
 |Z|X|C|V|
 
 __Original ASCII layout (_for reference only_):__
+
 |||||
 |--|--|--|--|
-|1|2|3|C|   
-|4|5|6|D|   
-|7|8|9|E|   
+|1|2|3|C|
+|4|5|6|D|
+|7|8|9|E|
 |A|0|B|F|
 
 # Settings
