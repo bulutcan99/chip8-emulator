@@ -530,6 +530,7 @@ impl CpuController {
             let value = emu.get_ram()[i as usize + index as usize];
             emu.set_v(index, value)?;
         }
+
         Ok(())
     }
 }
