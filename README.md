@@ -68,13 +68,13 @@ __Individual instructions:__
 |`EXA1` - SKNP VX|Yes|
 |`FX07` - LD VX, DT|Yes|
 |`FX0A` - LD VX, K|Yes|
-|`FX15` - LD DT, VX|Not used|
-|`FX18` - LD ST, VX|Not used|
-|`FX1E` - ADD I, VX|Not used|
-|`FX29` - LD F, VX|Not used|
-|`FX33` - LD B, VX|Not used|
-|`FX55` - LD [I], VX|Not used|
-|`FX65` - LD VX, [I]|Not used|
+|`FX15` - LD DT, VX|Yes|
+|`FX18` - LD ST, VX|Yes|
+|`FX1E` - ADD I, VX|Yes|
+|`FX29` - LD F, VX|Yes|
+|`FX33` - LD B, VX|Yes|
+|`FX55` - LD [I], VX|Yes|
+|`FX65` - LD VX, [I]|Yes|
 
 # Keyboard
 

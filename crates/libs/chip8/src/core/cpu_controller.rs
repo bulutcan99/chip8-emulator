@@ -510,4 +510,26 @@ impl CpuController {
         emu.get_ram()[emu.get_i() as usize + 2] = ones;
         Ok(())
     }
+
+    // FX55 - LD RAM (with V)
+    fn load_ram_with_v(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let i = emu.get_i();
+        for index in 0..=x {
+            let vx = emu.get_v(index)?;
+            emu.get_ram()[i as usize + index as usize] = vx;
+        }
+        Ok(())
+    }
+
+    // FX65 - LD V (with I)
+    fn load_v_with_ram(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let i = emu.get_i();
+        for index in 0..=x {
+            let value = emu.get_ram()[i as usize + index as usize];
+            emu.set_v(index, value)?;
+        }
+        Ok(())
+    }
 }
