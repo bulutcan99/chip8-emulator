@@ -209,8 +209,7 @@ impl Emulator {
         for i in 0..16 {
             if self.chip8.keys[i] {
                 return Some(i as u8);
-            }
-        }
+            } }
         None
     }
 }

@@ -450,12 +450,64 @@ impl CpuController {
     // FX0A - WT KEY (to VX)
     fn wait_for_key(&self, emu: &mut Emulator) -> Result<(), Error> {
         let x = self.x();
-        loop {
-            if let Some(key) = emu.check_key_press() {
-                emu.set_v(x, key)?;
-                break;
-            }
+        let mut pressed = false;
+        if let Some(key) = emu.check_key_press() {
+            emu.set_v(x, key)?;
+            pressed = true;
         }
+        if !pressed {
+            emu.dec_pc_by(2)
+        }
+        Ok(())
+    }
+
+    // FX15 - LD DT (with VX)
+    fn load_dt_with_vx(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+        emu.set_dt(vx);
+        Ok(())
+    }
+
+    // FX18 - LD ST (with VX)
+    fn load_st_with_vx(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+        emu.set_st(vx);
+        Ok(())
+    }
+
+    // FX1E - ADD I (with VX)
+    fn add_i_with_vx(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+        let i = emu.get_i();
+        let result = i + vx as u16;
+        emu.set_i(result);
+        Ok(())
+    }
+
+    // FX29 - LD F (with VX)
+    fn load_f_with_vx(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+        let f = 5 * vx as u16;
+        emu.set_i(f);
+        Ok(())
+    }
+
+    // FX33 - LD RAM (with I)
+    fn load_ram_with_i(&self, emu: &mut Emulator) -> Result<(), Error> {
+        let x = self.x();
+        let vx = emu.get_v(x)?;
+
+        let hundereds = (vx / 100) as u8;
+        let tens = (vx / 10) % 10 as u8;
+        let ones = (vx % 10) as u8;
+
+        emu.get_ram()[emu.get_i() as usize] = hundereds;
+        emu.get_ram()[emu.get_i() as usize + 1] = tens;
+        emu.get_ram()[emu.get_i() as usize + 2] = ones;
         Ok(())
     }
 }
