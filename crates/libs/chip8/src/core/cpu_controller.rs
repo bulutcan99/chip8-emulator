@@ -113,6 +113,7 @@ impl CpuController {
         let x = self.x();
         let y = self.y();
         let fourth_nibble = self.fourth_nibble();
+        let addr = self.extract_12bit_address();
 
         match first_nibble {
             0x0 => match self.word {
@@ -133,6 +134,18 @@ impl CpuController {
                     Err(anyhow::anyhow!("Unsupported instruction"))
                 }
             },
+            0x1 => {
+                debug!("Jump to address: {:#04x}", self.extract_12bit_address());
+                Instruction::Jmp(addr).execute(emulator)
+            }
+            0x2 => {
+                debug!(
+                    "Call subroutine at address: {:#04x}",
+                    self.extract_12bit_address()
+                );
+                Instruction::Call(addr).execute(emulator)
+            }
+
             _ => Err(anyhow::anyhow!("Unsupported instruction")),
         }
     }

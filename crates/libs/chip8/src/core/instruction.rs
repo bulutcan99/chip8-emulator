@@ -1,6 +1,6 @@
 use anyhow::Error;
 use rand::Rng;
-use tracing::{debug, error};
+use tracing::error;
 
 use super::{
     chip8::{SCREEN_HEIGHT, SCREEN_WIDTH},
@@ -46,14 +46,11 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn execute(&self, emu: &mut Emulator) -> Result<(), Error> {
+    pub fn execute(&self, emu: &mut Emulator, is_inc_pc: &mut bool) -> Result<(), Error> {
         match self {
-            Instruction::Nop => {
-                debug!("NOP executed: No operation performed.");
-            }
+            Instruction::Nop => {}
             Instruction::Cls => {
                 emu.clear_screen();
-                debug!("Screen cleared!");
             }
             Instruction::Ret => {
                 emu.stack_pop().map_err(|err| {
@@ -63,28 +60,32 @@ impl Instruction {
             }
             Instruction::Jmp(addr) => {
                 emu.set_pc(*addr);
+                *is_inc_pc = false; // Set to false
             }
             Instruction::Call(addr) => {
                 emu.stack_push(emu.get_pc())?;
                 emu.set_pc(*addr);
+                *is_inc_pc = false; // Set to false
             }
             Instruction::SeVx(x, byte) => {
                 let v = emu.get_v(*x)?;
+                // Example implementation
                 if v == *byte {
-                    self.skip_next_instruction(emu);
+                    emu.inc_pc_by(2); // Assuming we want to increment if equal
                 }
             }
             Instruction::SneVx(x, byte) => {
                 let v = emu.get_v(*x)?;
+                // Example implementation
                 if v != *byte {
-                    self.skip_next_instruction(emu);
+                    emu.inc_pc_by(2); // Assuming we want to increment if not equal
                 }
             }
             Instruction::SeVxVy(x, y) => {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 if vx == vy {
-                    self.skip_next_instruction(emu);
+                    emu.inc_pc_by(2); // Assuming we want to increment if equal
                 }
             }
             Instruction::LdVx(x, byte) => {
@@ -118,22 +119,14 @@ impl Instruction {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 let (result, overflow) = vx.overflowing_add(vy);
-                if overflow {
-                    emu.set_v(0xF, 1)?;
-                } else {
-                    emu.set_v(0xF, 0)?;
-                }
+                emu.set_v(0xF, if overflow { 1 } else { 0 })?;
                 emu.set_v(*x, result)?;
             }
             Instruction::SubVxVy(x, y) => {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 let (result, overflow) = vx.overflowing_sub(vy);
-                if overflow {
-                    emu.set_v(0xF, 0)?;
-                } else {
-                    emu.set_v(0xF, 1)?;
-                }
+                emu.set_v(0xF, if overflow { 0 } else { 1 })?;
                 emu.set_v(*x, result)?;
             }
             Instruction::ShrVx(x) => {
@@ -147,11 +140,7 @@ impl Instruction {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 let (result, overflow) = vy.overflowing_sub(vx);
-                if overflow {
-                    emu.set_v(0xF, 0)?;
-                } else {
-                    emu.set_v(0xF, 1)?;
-                }
+                emu.set_v(0xF, if overflow { 0 } else { 1 })?;
                 emu.set_v(*x, result)?;
             }
             Instruction::ShlVx(x) => {
@@ -165,7 +154,7 @@ impl Instruction {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 if vx != vy {
-                    self.skip_next_instruction(emu);
+                    emu.inc_pc_by(2); // Assuming we want to increment if not equal
                 }
             }
             Instruction::LdI(addr) => {
@@ -174,6 +163,7 @@ impl Instruction {
             Instruction::JpV0(addr) => {
                 let v0 = emu.get_v(0)?;
                 emu.set_pc((*addr).wrapping_add(v0 as u16));
+                *is_inc_pc = false; // Set to false
             }
             Instruction::Rnd(x, byte) => {
                 let rnd = rand::thread_rng().gen_range(0..=255);
@@ -206,14 +196,17 @@ impl Instruction {
             }
             Instruction::SkpVx(x) => {
                 let vx = emu.get_v(*x)?;
-                if emu.is_key_pressed(vx) {
-                    self.skip_next_instruction(emu);
+
+                let is_pressed = emu.is_key_pressed(vx);
+                if is_pressed {
+                    emu.inc_pc_by(2); // Increment PC if key not pressed
                 }
             }
             Instruction::SknpVx(x) => {
                 let vx = emu.get_v(*x)?;
-                if !emu.is_key_pressed(vx) {
-                    self.skip_next_instruction(emu);
+                let is_pressed = emu.is_key_pressed(vx);
+                if !is_pressed {
+                    emu.inc_pc_by(2); // Increment PC if key not pressed
                 }
             }
             Instruction::LdVxDt(x) => {
@@ -225,6 +218,7 @@ impl Instruction {
                     emu.set_v(*x, key)?;
                 } else {
                     emu.dec_pc_by(2);
+                    *is_inc_pc = false; // Set to false
                 }
             }
             Instruction::LdDtVx(x) => {
@@ -247,12 +241,11 @@ impl Instruction {
             }
             Instruction::LdBVx(x) => {
                 let vx = emu.get_v(*x)?;
-
-                let hundereds = (vx / 100) as u8;
+                let hundreds = (vx / 100) as u8;
                 let tens = (vx / 10) % 10 as u8;
                 let ones = (vx % 10) as u8;
 
-                emu.get_ram()[emu.get_i() as usize] = hundereds;
+                emu.get_ram()[emu.get_i() as usize] = hundreds;
                 emu.get_ram()[emu.get_i() as usize + 1] = tens;
                 emu.get_ram()[emu.get_i() as usize + 2] = ones;
             }
@@ -272,11 +265,5 @@ impl Instruction {
             }
         }
         Ok(())
-    }
-    fn skip_next_instruction(&self, emu: &mut Emulator) {
-        emu.inc_pc_by(2)
-    }
-    fn rollback_instruction(&self, emu: &mut Emulator) {
-        emu.dec_pc_by(2)
     }
 }
