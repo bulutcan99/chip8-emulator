@@ -7,6 +7,7 @@ use super::{
     emulator::Emulator,
 };
 
+//TODO: GET_RAM WILL CHANGE TO SET_RAM (for sets)
 pub enum Instruction {
     Nop,
     Cls,
@@ -93,7 +94,7 @@ impl Instruction {
             }
             Instruction::AddVx(x, byte) => {
                 let vx = emu.get_v(*x)?;
-                let result = vx.wrapping_add(*byte);
+                let (result, _) = vx.overflowing_add(*byte);
                 emu.set_v(*x, result)?;
             }
             Instruction::LdVxVy(x, y) => {
@@ -163,7 +164,6 @@ impl Instruction {
             Instruction::JpV0(addr) => {
                 let v0 = emu.get_v(0)?;
                 emu.set_pc((*addr).wrapping_add(v0 as u16));
-                *is_inc_pc = false; // Set to false
             }
             Instruction::Rnd(x, byte) => {
                 let rnd = rand::thread_rng().gen_range(0..=255);
