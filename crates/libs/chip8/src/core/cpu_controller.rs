@@ -4,7 +4,10 @@ use anyhow::{anyhow, Error};
 use rand::Rng;
 use tracing::{debug, error, info};
 
-use super::chip8::{SCREEN_HEIGHT, SCREEN_WIDTH};
+use super::{
+    chip8::{SCREEN_HEIGHT, SCREEN_WIDTH},
+    instruction::Instruction,
+};
 
 enum CpuState {
     Halted,
@@ -103,5 +106,34 @@ impl CpuController {
         let y = self.y();
         let fourth = self.fourth_nibble();
         BitManipulation::combine_nibbles_to_16bit_address(x, y, fourth)
+    }
+
+    fn exec_instruction(&self, emulator: &mut Emulator) -> Result<(), anyhow::Error> {
+        let first_nibble = self.first_nibble();
+        let x = self.x();
+        let y = self.y();
+        let fourth_nibble = self.fourth_nibble();
+
+        match first_nibble {
+            0x0 => match self.word {
+                0x0000 => {
+                    debug!("NOP executed: No operation performed.");
+                    Instruction::Nop.execute(emulator)
+                }
+                0x00E0 => {
+                    debug!("Screen cleared!");
+                    Instruction::Cls.execute(emulator)
+                }
+                0x00EE => {
+                    debug!("Returned from subroutine!");
+                    Instruction::Ret.execute(emulator)
+                }
+                _ => {
+                    error!("Unsupported instruction: {:#04x}", self.word);
+                    Err(anyhow::anyhow!("Unsupported instruction"))
+                }
+            },
+            _ => Err(anyhow::anyhow!("Unsupported instruction")),
+        }
     }
 }
