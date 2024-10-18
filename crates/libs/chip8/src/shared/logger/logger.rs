@@ -13,58 +13,58 @@ use crate::shared::config::config::Config;
 // Define an enumeration for log levels
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub enum LogLevel {
-	/// The "off" level.
-	#[serde(rename = "off")]
-	Off,
-	/// The "trace" level.
-	#[serde(rename = "trace")]
-	Trace,
-	/// The "debug" level.
-	#[serde(rename = "debug")]
-	Debug,
-	/// The "info" level.
-	#[serde(rename = "info")]
-	#[default]
-	Info,
-	/// The "warn" level.
-	#[serde(rename = "warn")]
-	Warn,
-	/// The "error" level.
-	#[serde(rename = "error")]
-	Error,
+    /// The "off" level.
+    #[serde(rename = "off")]
+    Off,
+    /// The "trace" level.
+    #[serde(rename = "trace")]
+    Trace,
+    /// The "debug" level.
+    #[serde(rename = "debug")]
+    Debug,
+    /// The "info" level.
+    #[serde(rename = "info")]
+    #[default]
+    Info,
+    /// The "warn" level.
+    #[serde(rename = "warn")]
+    Warn,
+    /// The "error" level.
+    #[serde(rename = "error")]
+    Error,
 }
 
 // Define an enumeration for log formats
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub enum Format {
-	#[serde(rename = "compact")]
-	#[default]
-	Compact,
-	#[serde(rename = "pretty")]
-	Pretty,
-	#[serde(rename = "json")]
-	Json,
+    #[serde(rename = "compact")]
+    #[default]
+    Compact,
+    #[serde(rename = "pretty")]
+    Pretty,
+    #[serde(rename = "json")]
+    Json,
 }
 
 // Define an enumeration for log file appender rotation
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub enum Rotation {
-	#[serde(rename = "minutely")]
-	Minutely,
-	#[serde(rename = "hourly")]
-	#[default]
-	Hourly,
-	#[serde(rename = "daily")]
-	Daily,
-	#[serde(rename = "never")]
-	Never,
+    #[serde(rename = "minutely")]
+    Minutely,
+    #[serde(rename = "hourly")]
+    #[default]
+    Hourly,
+    #[serde(rename = "daily")]
+    Daily,
+    #[serde(rename = "never")]
+    Never,
 }
 
 // Implement Display trait for LogLevel to enable pretty printing
 impl std::fmt::Display for LogLevel {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		to_variant_name(self).expect("only enum supported").fmt(f)
-	}
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        to_variant_name(self).expect("only enum supported").fmt(f)
+    }
 }
 
 // Function to initialize the logger based on the provided configuration
@@ -90,127 +90,127 @@ static NONBLOCKING_WORK_GUARD_KEEP: OnceLock<WorkerGuard> = OnceLock::new();
 /// 3. regardless of (1) and (2) operators in production, or elsewhere can
 ///    always use `RUST_LOG` to quickly diagnose a service
 pub fn init() {
-	let config = Config::get();
-	let mut layers: Vec<Box<dyn Layer<Registry> + Sync + Send>> = Vec::new();
+    let config = Config::get();
+    let mut layers: Vec<Box<dyn Layer<Registry> + Sync + Send>> = Vec::new();
 
-	if let Some(file_appender_config) = config.logger.file_appender.as_ref() {
-		if file_appender_config.enable {
-			let dir = file_appender_config
-				.dir
-				.as_ref()
-				.map_or_else(|| "./logs".to_string(), ToString::to_string);
+    if let Some(file_appender_config) = config.logger.file_appender.as_ref() {
+        if file_appender_config.enable {
+            let dir = file_appender_config
+                .dir
+                .as_ref()
+                .map_or_else(|| "./logs".to_string(), ToString::to_string);
 
-			let mut rolling_builder = tracing_appender::rolling::Builder::default()
-				.max_log_files(file_appender_config.max_log_files);
+            let mut rolling_builder = tracing_appender::rolling::Builder::default()
+                .max_log_files(file_appender_config.max_log_files);
 
-			rolling_builder = match file_appender_config.rotation {
-				Rotation::Minutely => {
-					rolling_builder.rotation(tracing_appender::rolling::Rotation::MINUTELY)
-				}
-				Rotation::Hourly => {
-					rolling_builder.rotation(tracing_appender::rolling::Rotation::HOURLY)
-				}
-				Rotation::Daily => {
-					rolling_builder.rotation(tracing_appender::rolling::Rotation::DAILY)
-				}
-				Rotation::Never => {
-					rolling_builder.rotation(tracing_appender::rolling::Rotation::NEVER)
-				}
-			};
+            rolling_builder = match file_appender_config.rotation {
+                Rotation::Minutely => {
+                    rolling_builder.rotation(tracing_appender::rolling::Rotation::MINUTELY)
+                }
+                Rotation::Hourly => {
+                    rolling_builder.rotation(tracing_appender::rolling::Rotation::HOURLY)
+                }
+                Rotation::Daily => {
+                    rolling_builder.rotation(tracing_appender::rolling::Rotation::DAILY)
+                }
+                Rotation::Never => {
+                    rolling_builder.rotation(tracing_appender::rolling::Rotation::NEVER)
+                }
+            };
 
-			let file_appender = rolling_builder
-				.filename_prefix(
-					file_appender_config
-						.filename_prefix
-						.as_ref()
-						.map_or_else(String::new, ToString::to_string),
-				)
-				.filename_suffix(
-					file_appender_config
-						.filename_suffix
-						.as_ref()
-						.map_or_else(String::new, ToString::to_string),
-				)
-				.build(dir)
-				.expect("logger file appender initialization failed");
+            let file_appender = rolling_builder
+                .filename_prefix(
+                    file_appender_config
+                        .filename_prefix
+                        .as_ref()
+                        .map_or_else(String::new, ToString::to_string),
+                )
+                .filename_suffix(
+                    file_appender_config
+                        .filename_suffix
+                        .as_ref()
+                        .map_or_else(String::new, ToString::to_string),
+                )
+                .build(dir)
+                .expect("logger file appender initialization failed");
 
-			let file_appender_layer = if file_appender_config.non_blocking {
-				let (non_blocking_file_appender, work_guard) =
-					tracing_appender::non_blocking(file_appender);
-				NONBLOCKING_WORK_GUARD_KEEP.set(work_guard).unwrap();
-				init_layer(non_blocking_file_appender, &config.logger.format, false)
-			} else {
-				init_layer(file_appender, &config.logger.format, false)
-			};
-			layers.push(file_appender_layer);
-		}
-	}
+            let file_appender_layer = if file_appender_config.non_blocking {
+                let (non_blocking_file_appender, work_guard) =
+                    tracing_appender::non_blocking(file_appender);
+                NONBLOCKING_WORK_GUARD_KEEP.set(work_guard).unwrap();
+                init_layer(non_blocking_file_appender, &config.logger.format, false)
+            } else {
+                init_layer(file_appender, &config.logger.format, false)
+            };
+            layers.push(file_appender_layer);
+        }
+    }
 
-	if config.logger.enable {
-		let stdout_layer = init_layer(std::io::stdout, &config.logger.format, true);
-		layers.push(stdout_layer);
-	}
+    if config.logger.enable {
+        let stdout_layer = init_layer(std::io::stdout, &config.logger.format, true);
+        layers.push(stdout_layer);
+    }
 
-	if !layers.is_empty() {
-		let env_filter = init_env_filter(
-			config.logger.override_filter.as_ref(),
-			&config.logger.level,
-			&config.server.name,
-		);
-		tracing_subscriber::registry()
-			.with(layers)
-			.with(env_filter)
-			.init();
-	}
+    if !layers.is_empty() {
+        let env_filter = init_env_filter(
+            config.logger.override_filter.as_ref(),
+            &config.logger.level,
+            &config.app.name,
+        );
+        tracing_subscriber::registry()
+            .with(layers)
+            .with(env_filter)
+            .init();
+    }
 }
 
 fn init_env_filter(
-	override_filter: Option<&String>,
-	level: &LogLevel,
-	app_name: &str,
+    override_filter: Option<&String>,
+    level: &LogLevel,
+    app_name: &str,
 ) -> EnvFilter {
-	EnvFilter::try_from_default_env()
-		.or_else(|_| {
-			override_filter.map_or_else(
-				|| {
-					EnvFilter::try_new(
-						MODULE_WHITELIST
-							.iter()
-							.map(|m| format!("{m}={level}"))
-							.chain(std::iter::once(format!("{}={}", app_name, level)))
-							.collect::<Vec<_>>()
-							.join(","),
-					)
-				},
-				EnvFilter::try_new,
-			)
-		})
-		.expect("logger initialization failed")
+    EnvFilter::try_from_default_env()
+        .or_else(|_| {
+            override_filter.map_or_else(
+                || {
+                    EnvFilter::try_new(
+                        MODULE_WHITELIST
+                            .iter()
+                            .map(|m| format!("{m}={level}"))
+                            .chain(std::iter::once(format!("{}={}", app_name, level)))
+                            .collect::<Vec<_>>()
+                            .join(","),
+                    )
+                },
+                EnvFilter::try_new,
+            )
+        })
+        .expect("logger initialization failed")
 }
 
 fn init_layer<W2>(
-	make_writer: W2,
-	format: &Format,
-	ansi: bool,
+    make_writer: W2,
+    format: &Format,
+    ansi: bool,
 ) -> Box<dyn Layer<Registry> + Sync + Send>
 where
-	W2: for<'writer> MakeWriter<'writer> + Sync + Send + 'static,
+    W2: for<'writer> MakeWriter<'writer> + Sync + Send + 'static,
 {
-	match format {
-		Format::Compact => fmt::Layer::default()
-			.with_ansi(ansi)
-			.with_writer(make_writer)
-			.compact()
-			.boxed(),
-		Format::Pretty => fmt::Layer::default()
-			.with_ansi(ansi)
-			.with_writer(make_writer)
-			.pretty()
-			.boxed(),
-		Format::Json => fmt::Layer::default()
-			.with_ansi(ansi)
-			.with_writer(make_writer)
-			.json()
-			.boxed(),
-	}
+    match format {
+        Format::Compact => fmt::Layer::default()
+            .with_ansi(ansi)
+            .with_writer(make_writer)
+            .compact()
+            .boxed(),
+        Format::Pretty => fmt::Layer::default()
+            .with_ansi(ansi)
+            .with_writer(make_writer)
+            .pretty()
+            .boxed(),
+        Format::Json => fmt::Layer::default()
+            .with_ansi(ansi)
+            .with_writer(make_writer)
+            .json()
+            .boxed(),
+    }
 }

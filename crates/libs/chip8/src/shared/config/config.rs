@@ -15,8 +15,15 @@ lazy_static! {
 /// can be customized through YAML files for different environments.
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Config {
+    pub app: App,
     pub logger: Logger,
     pub chip8: EmuSettings,
+}
+
+/// App configuration
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct App {
+    pub name: String,
 }
 
 /// Logger configuration
