@@ -47,7 +47,7 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn execute(&self, emu: &mut Emulator, is_inc_pc: &mut bool) -> Result<(), Error> {
+    pub fn call(&self, emu: &mut Emulator) -> Result<(), Error> {
         match self {
             Instruction::Op0000 => {} // NOP
             Instruction::Op00E0 => {
@@ -61,12 +61,10 @@ impl Instruction {
             }
             Instruction::Op1NNN(addr) => {
                 emu.set_pc(*addr);
-                *is_inc_pc = false;
             }
             Instruction::Op2NNN(addr) => {
                 emu.stack_push(emu.get_pc())?;
                 emu.set_pc(*addr);
-                *is_inc_pc = false;
             }
             Instruction::Op3XNN(x, byte) => {
                 let v = emu.get_v(*x)?;
@@ -215,7 +213,6 @@ impl Instruction {
                     emu.set_v(*x, key)?;
                 } else {
                     emu.dec_pc_by(2);
-                    *is_inc_pc = false;
                 }
             }
             Instruction::OpFX15(x) => {
