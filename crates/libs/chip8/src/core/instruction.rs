@@ -72,21 +72,21 @@ impl Instruction {
                 let v = emu.get_v(*x)?;
                 // Example implementation
                 if v == *byte {
-                    emu.inc_pc_by(2); // Assuming we want to increment if equal
+                    emu.inc_pc_by(2);
                 }
             }
             Instruction::SneVx(x, byte) => {
                 let v = emu.get_v(*x)?;
                 // Example implementation
                 if v != *byte {
-                    emu.inc_pc_by(2); // Assuming we want to increment if not equal
+                    emu.inc_pc_by(2);
                 }
             }
             Instruction::SeVxVy(x, y) => {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 if vx == vy {
-                    emu.inc_pc_by(2); // Assuming we want to increment if equal
+                    emu.inc_pc_by(2);
                 }
             }
             Instruction::LdVx(x, byte) => {
@@ -155,7 +155,7 @@ impl Instruction {
                 let vx = emu.get_v(*x)?;
                 let vy = emu.get_v(*y)?;
                 if vx != vy {
-                    emu.inc_pc_by(2); // Assuming we want to increment if not equal
+                    emu.inc_pc_by(2);
                 }
             }
             Instruction::LdI(addr) => {
@@ -199,14 +199,14 @@ impl Instruction {
 
                 let is_pressed = emu.is_key_pressed(vx);
                 if is_pressed {
-                    emu.inc_pc_by(2); // Increment PC if key not pressed
+                    emu.inc_pc_by(2);
                 }
             }
             Instruction::SknpVx(x) => {
                 let vx = emu.get_v(*x)?;
                 let is_pressed = emu.is_key_pressed(vx);
                 if !is_pressed {
-                    emu.inc_pc_by(2); // Increment PC if key not pressed
+                    emu.inc_pc_by(2);
                 }
             }
             Instruction::LdVxDt(x) => {
@@ -245,15 +245,15 @@ impl Instruction {
                 let tens = (vx / 10) % 10 as u8;
                 let ones = (vx % 10) as u8;
 
-                emu.get_ram()[emu.get_i() as usize] = hundreds;
-                emu.get_ram()[emu.get_i() as usize + 1] = tens;
-                emu.get_ram()[emu.get_i() as usize + 2] = ones;
+                emu.set_to_ram(emu.get_i() as usize, hundreds)?;
+                emu.set_to_ram(emu.get_i() as usize + 1, tens)?;
+                emu.set_to_ram(emu.get_i() as usize + 2, ones)?;
             }
             Instruction::LdIVx(x) => {
                 let i = emu.get_i();
                 for index in 0..=*x {
                     let vx = emu.get_v(index)?;
-                    emu.get_ram()[i as usize + index as usize] = vx;
+                    emu.set_to_ram(i as usize + index as usize, vx)?;
                 }
             }
             Instruction::LdVxI(x) => {

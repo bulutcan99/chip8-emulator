@@ -39,8 +39,16 @@ impl Emulator {
         Ok(())
     }
 
-    pub fn get_ram(&self) -> [u8; 4096] {
-        self.chip8.ram
+    pub fn get_ram(&self) -> &[u8] {
+        &self.chip8.ram
+    }
+
+    pub fn get_from_ram(&self, index: usize) -> Result<u8, Error> {
+        if index >= self.chip8.ram.len() {
+            error!("Index out of bounds for RAM!");
+            return Err(anyhow!("Index out of bounds for RAM!"));
+        }
+        Ok(self.chip8.ram[index])
     }
 
     pub fn set_to_ram(&mut self, index: usize, val: u8) -> Result<(), Error> {
