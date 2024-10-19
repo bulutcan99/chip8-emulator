@@ -1,3 +1,5 @@
+use std::u16;
+
 use crate::core::emulator::Emulator;
 use crate::shared::data::bit::BitManipulation;
 use anyhow::{anyhow, Error};
@@ -99,25 +101,18 @@ impl CpuController {
         BitManipulation::combine_nibbles_to_16bit_address(x, y, fourth)
     }
 
-    pub fn fetch_exec(&self, emulator: &mut Emulator) -> Result<(), Error> {
-        let mut is_inc_pc = true;
-        self.ld_instruction(emulator)
-        self.exec_instruction(emulator, &mut is_inc_pc)?;
-        if is_inc_pc {
-            emulator.inc_pc();
-        }
+    pub fn tick(&self, emulator: &mut Emulator) -> Result<(), Error> {
+        self.fetch(emulator)?;
+        self.exec_instruction(emulator)?;
         Ok(())
     }
 
-    fn ld_next_instruction(&self, emulator: &mut Emulator) -> Result<(), Error> {
-    //TODO: Implement this
+    fn fetch(&self, emulator: &mut Emulator) -> Result<(), Error> {
+        emulator.inc_pc_by(2);
+        Ok(())
     }
 
-    fn exec_instruction(
-        &self,
-        emulator: &mut Emulator,
-        is_inc_pc: &mut bool,
-    ) -> Result<(), anyhow::Error> {
+    fn exec_instruction(&self, emulator: &mut Emulator) -> Result<(), anyhow::Error> {
         let first_nibble = self.first_nibble();
         let x = self.x();
         let y = self.y();
@@ -147,12 +142,10 @@ impl CpuController {
             0x1 => {
                 debug!("Jump to address: {:#04x}", addr);
                 Instruction::Op1NNN(addr).call(emulator)?;
-                *is_inc_pc = false;
             }
             0x2 => {
                 debug!("Call subroutine at address: {:#04x}", addr);
                 Instruction::Op2NNN(addr).call(emulator)?;
-                *is_inc_pc = false;
             }
             0x3 => {
                 debug!("Skip next instruction if V{:X} == {:#04x}", x, byte);
@@ -223,7 +216,6 @@ impl CpuController {
             0xB => {
                 debug!("Jump to address V0 + {:#04x}", addr);
                 Instruction::OpBNNN(addr).call(emulator)?;
-                *is_inc_pc = false;
             }
             0xC => {
                 debug!("Set V{:X} = random byte AND {:#04x}", x, byte);

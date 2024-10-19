@@ -7,7 +7,6 @@ use super::{
     emulator::Emulator,
 };
 
-//TODO: GET_RAM WILL CHANGE TO SET_RAM (for sets)
 pub enum Instruction {
     Op0000,
     Op00E0,
@@ -90,7 +89,7 @@ impl Instruction {
             }
             Instruction::Op7XNN(x, byte) => {
                 let vx = emu.get_v(*x)?;
-                let (result, _) = vx.overflowing_add(*byte);
+                let result = vx.wrapping_add(*byte as u8);
                 emu.set_v(*x, result)?;
             }
             Instruction::Op8XY0(x, y) => {
@@ -159,7 +158,7 @@ impl Instruction {
             }
             Instruction::OpBNNN(addr) => {
                 let v0 = emu.get_v(0)?;
-                emu.set_pc((*addr).wrapping_add(v0 as u16));
+                emu.set_pc((*addr) + (v0 as u16));
             }
             Instruction::OpCXNN(x, byte) => {
                 let rnd = rand::thread_rng().gen_range(0..=255);
