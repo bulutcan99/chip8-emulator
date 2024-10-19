@@ -110,7 +110,7 @@ impl CpuController {
     }
 
     fn ld_next_instruction(&self, emulator: &mut Emulator) -> Result<(), Error> {
-
+    //TODO: Implement this
     }
 
     fn exec_instruction(
