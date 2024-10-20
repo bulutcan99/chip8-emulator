@@ -145,10 +145,8 @@ impl Emulator {
             error!("Stack underflowed!");
             return Err(anyhow!("Stack underflow: No more elements to pop!"));
         }
-
-        self.chip8.pc = self.chip8.stack[(self.chip8.sp - 1) as usize];
-        self.chip8.stack[(self.chip8.sp - 1) as usize] = 0;
         self.chip8.sp -= 1;
+        self.chip8.pc = self.chip8.stack[self.chip8.sp as usize];
 
         Ok(())
     }
@@ -159,10 +157,9 @@ impl Emulator {
                 "Stack overflow: No more space to push new element!"
             ));
         }
-
-        self.chip8.sp += 1;
-        self.chip8.stack[(self.chip8.sp - 1) as usize] = self.chip8.pc;
+        self.chip8.stack[self.chip8.sp as usize] = self.chip8.pc;
         self.chip8.pc = new_pc_addr;
+        self.chip8.sp += 1;
 
         Ok(())
     }
@@ -197,6 +194,11 @@ impl Emulator {
             return Err(anyhow!(
                 "The selected ROM size will overflow beyond the limit of RAM!"
             ));
+        }
+
+        let start_addr = 0x200;
+        for (i, byte) in byte_vec.iter().enumerate() {
+            self.chip8.ram[start_addr + i] = *byte;
         }
 
         Ok(())
