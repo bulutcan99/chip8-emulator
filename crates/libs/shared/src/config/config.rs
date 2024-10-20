@@ -1,10 +1,10 @@
-use crate::shared::data;
-use crate::shared::logger::logger;
 use lazy_static::lazy_static;
 use serde_derive::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
+
+use crate::logger::logger;
 
 use super::environment::Environment;
 use super::error::ConfigError;
@@ -77,7 +77,7 @@ impl EmuSettings {
     }
 
     pub fn get_bg_color(&self) -> Color {
-        self.bg_color
+        self.bg_color.clone() // Color is Copy, but using clone for safety
     }
 
     pub fn get_cycles_per_frame(&self) -> u32 {
@@ -89,7 +89,7 @@ impl EmuSettings {
     }
 
     pub fn get_pixel_color(&self) -> Color {
-        self.pixel_color
+        self.pixel_color.clone() // Same as bg_color
     }
 
     pub fn get_scale(&self) -> u32 {
@@ -106,6 +106,30 @@ impl EmuSettings {
 
     pub fn get_store_read_instructions_change_i(&self) -> bool {
         self.store_read_instructions_change_i
+    }
+}
+
+/// Color struct for representing colors in the emulator.
+///
+/// This uses the RGBA model where each color component (red, green, blue, alpha)
+/// is represented by a value between 0 and 255.
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct Color {
+    pub red: u8,
+    pub green: u8,
+    pub blue: u8,
+    pub alpha: u8,
+}
+
+impl Color {
+    /// Helper function to create a new `Color` with specified RGBA values.
+    pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+        Color {
+            red,
+            green,
+            blue,
+            alpha,
+        }
     }
 }
 
@@ -137,9 +161,7 @@ impl Config {
 
         let content = fs::read_to_string(selected_path)
             .map_err(|e| ConfigError::FileReadError(e.to_string()))?;
-        let rendered = data::render_string(&content, &serde_json::json!({}))
-            .map_err(|e| ConfigError::TemplateRenderError(e.to_string()))?;
 
-        serde_yaml::from_str(&rendered).map_err(|e| ConfigError::YamlParseError(e.to_string()))
+        serde_yaml::from_str(&content).map_err(|e| ConfigError::YamlParseError(e.to_string()))
     }
 }

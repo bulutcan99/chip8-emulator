@@ -43,6 +43,7 @@ dependencies = [
  "serde_json",
  "serde_variant",
  "serde_yaml",
+ "shared",
  "thiserror",
  "tracing",
  "tracing-appender",

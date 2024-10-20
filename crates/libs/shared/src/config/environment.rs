@@ -7,7 +7,6 @@ use serde_derive::{Deserialize, Serialize};
 use serde_variant::to_variant_name;
 
 pub const DEFAULT_ENVIRONMENT: &str = "development";
-
 impl From<String> for Environment {
     fn from(env: String) -> Self {
         Self::from_str(&env).unwrap_or(Self::Any(env))
