@@ -37,22 +37,27 @@ impl CpuController {
         Ok(())
     }
 
+    // [xxxx 0000 0000 0000]
     fn first_nibble(word: u16) -> u8 {
         (word >> 12) as u8
     }
 
+    // [0000 0000 xxxx xxxx]
     fn second_byte(word: u16) -> u8 {
         word as u8
     }
 
+    // [0000 xxxx 0000 0000]
     fn x(word: u16) -> u8 {
         ((word >> 8) & 0x0F) as u8
     }
 
+    // [0000 0000 xxxx 0000]
     fn y(word: u16) -> u8 {
         ((word >> 4) & 0x0F) as u8
     }
 
+    // [0000 0000 0000 xxxx]
     fn fourth_nibble(word: u16) -> u8 {
         (word & 0x0F) as u8
     }
