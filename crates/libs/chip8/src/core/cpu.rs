@@ -1,7 +1,6 @@
 use std::u16;
 
-use crate::core::emulator::Emulator;
-use crate::shared::data::bit::BitManipulation;
+use crate::{core::emulator::Emulator, shared::data::bit::BitManipulation};
 use anyhow::{anyhow, Error};
 use tracing::{debug, error, info};
 

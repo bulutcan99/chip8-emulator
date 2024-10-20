@@ -8,7 +8,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::{fmt, EnvFilter, Layer, Registry};
 
-use crate::shared::config::config::Config;
+use crate::config::config::Config;
 
 // Define an enumeration for log levels
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]

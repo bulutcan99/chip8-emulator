@@ -370,6 +370,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "shared"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+ "lazy_static",
+ "log",
+ "rand",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "serde_variant",
+ "serde_yaml",
+ "thiserror",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
