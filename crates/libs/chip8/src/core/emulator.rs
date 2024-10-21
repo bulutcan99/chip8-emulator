@@ -203,6 +203,7 @@ impl Emulator {
 
         Ok(())
     }
+
     pub fn get_display(&self) -> [bool; SCREEN_WIDTH * SCREEN_HEIGHT] {
         self.chip8.display
     }
@@ -211,8 +212,30 @@ impl Emulator {
         self.chip8.display = [false; SCREEN_WIDTH * SCREEN_HEIGHT];
     }
 
-    pub fn is_key_pressed(&self, idx: u8) -> bool {
-        self.chip8.keys[idx as usize]
+    pub fn key_press(&mut self, idx: u8) -> Result<(), Error> {
+        if idx > 0xF {
+            error!("Invalid key press!");
+            return Err(anyhow!("Invalid key press!"));
+        }
+        self.chip8.keys[idx as usize] = true;
+        Ok(())
+    }
+
+    pub fn key_release(&mut self, idx: u8) -> Result<(), Error> {
+        if idx > 0xF {
+            error!("Invalid key release!");
+            return Err(anyhow!("Invalid key release!"));
+        }
+        self.chip8.keys[idx as usize] = false;
+        Ok(())
+    }
+
+    pub fn is_key_pressed(&self, idx: u8) -> Result<bool, Error> {
+        if idx > 0xF {
+            error!("Invalid key index!");
+            return Err(anyhow!("Invalid key index!"));
+        }
+        Ok(self.chip8.keys[idx as usize])
     }
 
     pub fn check_key_press(&self) -> Option<u8> {

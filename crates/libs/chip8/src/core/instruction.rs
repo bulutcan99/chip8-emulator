@@ -192,14 +192,14 @@ impl Instruction {
             Instruction::OpEX9E(x) => {
                 let vx = emu.get_v(*x)?;
                 let is_pressed = emu.is_key_pressed(vx);
-                if is_pressed {
+                if is_pressed? {
                     emu.inc_pc_by(2);
                 }
             }
             Instruction::OpEXA1(x) => {
                 let vx = emu.get_v(*x)?;
                 let is_pressed = emu.is_key_pressed(vx);
-                if !is_pressed {
+                if !is_pressed? {
                     emu.inc_pc_by(2);
                 }
             }
