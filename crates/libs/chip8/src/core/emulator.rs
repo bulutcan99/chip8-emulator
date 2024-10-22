@@ -208,6 +208,16 @@ impl Emulator {
         self.chip8.display
     }
 
+    pub fn set_pixel(&mut self, index: usize, value: bool) -> Result<(), Error> {
+        if index >= SCREEN_WIDTH * SCREEN_HEIGHT {
+            return Err(anyhow!("Index out of range for this display!"));
+        }
+
+        self.chip8.display[index] = value;
+
+        Ok(())
+    }
+
     pub fn clear_screen(&mut self) {
         self.chip8.display = [false; SCREEN_WIDTH * SCREEN_HEIGHT];
     }

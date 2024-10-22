@@ -3,6 +3,7 @@ use std::default::Default;
 const RAM_SIZE: usize = 4096;
 const STACK_SIZE: usize = 16;
 const NUM_REGS: usize = 16;
+const REFRESH_RATE: usize = 60;
 const START_ADDR: u16 = 0x200;
 pub const SCREEN_WIDTH: usize = 64;
 pub const SCREEN_HEIGHT: usize = 32;
@@ -16,6 +17,8 @@ pub struct CHIP8 {
     pub pc: u16,
     pub dt: u8,
     pub st: u8,
+    pub keys: [bool; 16],
+    pub display: [bool; SCREEN_WIDTH * SCREEN_HEIGHT],
 }
 
 impl Default for CHIP8 {
@@ -29,6 +32,8 @@ impl Default for CHIP8 {
             pc: START_ADDR,
             dt: 0,
             st: 0,
+            keys: [false; 16],
+            display: [false; SCREEN_WIDTH * SCREEN_HEIGHT],
         }
     }
 }

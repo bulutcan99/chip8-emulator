@@ -177,8 +177,9 @@ impl Instruction {
                             let x = (vx as usize + abscissa) % SCREEN_WIDTH;
                             let y = (vy as usize + ordinate as usize) % SCREEN_HEIGHT;
                             let index = x + y * SCREEN_WIDTH;
-                            collision |= emu.get_display()[index];
-                            emu.get_display()[index] ^= true;
+                            let pixel = emu.get_display()[index];
+                            collision |= pixel;
+                            emu.set_pixel(index, pixel ^ true)?;
                         }
                     }
                 }
