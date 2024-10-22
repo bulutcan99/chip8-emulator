@@ -1,20 +1,20 @@
-use anyhow::Error;
+use anyhow::{anyhow, Error};
 use chip8::core::emulator::Emulator;
-use sdl2::{pixels::Color, rect::Point, EventPump};
+use sdl2::{rect::Point, AudioSubsystem, EventPump};
 use shared::data::math_2d::Math2d;
 
 use super::window::CustomWindow;
 
 pub struct Controller<'a> {
-    window: &'a CustomWindow<'a>,
+    window: &'a mut CustomWindow<'a>,
 }
 
 impl<'a> Controller<'a> {
-    pub fn new(window: &'a CustomWindow<'a>) -> Self {
+    pub fn new(window: &'a mut CustomWindow<'a>) -> Self {
         Self { window }
     }
 
-    pub fn pixel_at(&self, x: u8, y: u8, emu: &mut Emulator) -> Result<(), anyhow::Error> {
+    pub fn pixel_at(&mut self, x: u8, y: u8, emu: &mut Emulator) -> Result<(), Error> {
         // Wrap the coordinates to fit within the window dimensions.
         let x = Math2d::wrap_coord(x, self.window.win_w);
         let y = Math2d::wrap_coord(y, self.window.win_h);
@@ -36,11 +36,39 @@ impl<'a> Controller<'a> {
         self.window.canvas.set_draw_color(draw_color);
         self.window
             .canvas
-            .draw_point(Point::new(x as i32, y as i32))?;
-
+            .draw_point(Point::new(x as i32, y as i32))
+            .map_err(|e| anyhow!("Error drawing point: {:?}", e))?;
         // Toggle the pixel state (ON/OFF).
         self.window.pixel_vec[pixel_index as usize] ^= 1;
 
         Ok(())
+    }
+    pub fn clear_screen(&mut self) {
+        self.window.pixel_vec.fill(0);
+        self.window.canvas.set_draw_color(self.window.bg_color);
+        self.window.canvas.clear();
+    }
+
+    pub fn display_canvas(&mut self) {
+        self.window.canvas.present();
+    }
+
+    pub fn get_audio_subsystem(&self) -> AudioSubsystem {
+        self.window.sdl.audio().unwrap()
+    }
+
+    pub fn get_event_pump(&self) -> EventPump {
+        self.window.sdl.event_pump().unwrap()
+    }
+
+    pub fn get_window(&self) -> &CustomWindow {
+        self.window
+    }
+
+    pub fn set_canvas_scale(&mut self) {
+        self.window
+            .canvas
+            .set_scale(self.window.scale as f32, self.window.scale as f32)
+            .unwrap()
     }
 }

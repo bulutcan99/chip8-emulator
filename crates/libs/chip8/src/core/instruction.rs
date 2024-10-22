@@ -234,9 +234,9 @@ impl Instruction {
             }
             Instruction::OpFX33(x) => {
                 let vx = emu.get_v(*x)?;
-                let hundreds = (vx / 100) as u8;
-                let tens = (vx / 10) % 10 as u8;
-                let ones = (vx % 10) as u8;
+                let hundreds = vx / 100;
+                let tens = vx / 10 % 10;
+                let ones = vx % 10;
 
                 emu.set_to_ram(emu.get_i() as usize, hundreds)?;
                 emu.set_to_ram(emu.get_i() as usize + 1, tens)?;
