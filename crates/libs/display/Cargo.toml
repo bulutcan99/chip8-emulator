@@ -4,9 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-chip8 = { path = "../chip8" }
 shared = { path = "../shared" }
-sdl2 = { version = "0.34.5", features = ["image"] }
+sdl2 = { version = "0.37.0", features = ["image"] }
 anyhow = "1.0.90"
 serde = "1.0.204"
 serde_derive = "1.0"
