@@ -1,4 +1,4 @@
-use sdl2::image::{InitFlag, LoadSurface}; // LoadSurface için gerekli modül
+use sdl2::image::LoadSurface;
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::surface::Surface;
