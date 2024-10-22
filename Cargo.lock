@@ -98,11 +98,13 @@ name = "display"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chip8",
  "sdl2",
  "serde",
  "serde_derive",
  "serde_json",
  "serde_variant",
+ "shared",
 ]
 
 [[package]]

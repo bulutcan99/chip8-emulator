@@ -8,14 +8,14 @@ use sdl2::Sdl;
 const TITLE: &str = "Chip-8 Emulator";
 
 pub struct CustomWindow<'a> {
-    sdl: &'a Sdl,
-    win_w: u32,
-    win_h: u32,
-    scale: u32,
-    canvas: Canvas<Window>,
-    pixel_vec: Vec<u8>,
-    bg_color: Color,
-    pixel_color: Color,
+    pub sdl: &'a Sdl,
+    pub win_w: u32,
+    pub win_h: u32,
+    pub scale: u32,
+    pub canvas: Canvas<Window>,
+    pub pixel_vec: Vec<u8>,
+    pub bg_color: Color,
+    pub pixel_color: Color,
 }
 
 impl<'a> CustomWindow<'a> {
@@ -29,19 +29,20 @@ impl<'a> CustomWindow<'a> {
     ) -> Self {
         let win_w_scaled = win_w * scale;
         let win_h_scaled = win_h * scale;
-
-        let window = sdl
+        let mut canvas = sdl
             .video()
             .unwrap()
             .window(TITLE, win_w_scaled, win_h_scaled)
             .position_centered()
-            .opengl()
+            .build()
+            .unwrap()
+            .into_canvas()
             .build()
             .unwrap();
 
-        let mut canvas = window.into_canvas().present_vsync().build().unwrap();
-        canvas.clear();
-        canvas.present();
+        if let Ok(win_icon) = Surface::from_file("./assets/img/icon.png") {
+            canvas.window_mut().set_icon(win_icon);
+        }
 
         let pixel_vec = vec![0; win_w as usize * win_h as usize];
 
