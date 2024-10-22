@@ -45,6 +45,7 @@ dependencies = [
  "lazy_static",
  "log",
  "rand 0.8.5",
+ "sdl2",
  "serde",
  "serde_derive",
  "serde_json",

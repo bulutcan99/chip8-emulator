@@ -16,8 +16,6 @@ pub struct CHIP8 {
     pub pc: u16,
     pub dt: u8,
     pub st: u8,
-    pub keys: [bool; 16],
-    pub display: [bool; SCREEN_WIDTH * SCREEN_HEIGHT],
 }
 
 impl Default for CHIP8 {
@@ -31,8 +29,6 @@ impl Default for CHIP8 {
             pc: START_ADDR,
             dt: 0,
             st: 0,
-            keys: [false; 16],
-            display: [false; SCREEN_WIDTH * SCREEN_HEIGHT],
         }
     }
 }

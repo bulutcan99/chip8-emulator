@@ -1,9 +1,9 @@
 use anyhow::{anyhow, Error};
-use chip8::core::emulator::Emulator;
+use display::sdl::window::CustomWindow;
 use sdl2::{rect::Point, AudioSubsystem, EventPump};
 use shared::data::math_2d::Math2d;
 
-use super::window::CustomWindow;
+use super::emulator::Emulator;
 
 pub struct Controller<'a> {
     window: &'a mut CustomWindow<'a>,
