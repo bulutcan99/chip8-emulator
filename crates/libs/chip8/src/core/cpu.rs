@@ -33,7 +33,7 @@ impl CpuController {
         // Fetch the next instruction
         let word = self.fetch(emulator)?;
         // Execute the instruction
-        self.exec_instruction(emulator, word)?;
+        self.exec(emulator, word)?;
         Ok(())
     }
 
@@ -66,7 +66,7 @@ impl CpuController {
         word & 0x0FFF
     }
 
-    fn exec_instruction(&self, emulator: &mut Emulator, word: u16) -> Result<(), anyhow::Error> {
+    fn exec(&self, emulator: &mut Emulator, word: u16) -> Result<(), anyhow::Error> {
         let first_nibble = CpuController::first_nibble(word);
         let x = CpuController::x(word);
         let y = CpuController::y(word);

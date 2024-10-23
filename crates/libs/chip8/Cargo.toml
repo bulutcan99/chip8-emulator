@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-sdl2 = { version = "0.37.0", features = ["image"] }
-display = { path = "../display/" }
 shared = { path = "../shared/" }
 anyhow = "1.0.89"
 dotenvy = "0.15.7"

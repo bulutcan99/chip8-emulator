@@ -5,3 +5,15 @@ edition = "2021"
 
 [dependencies]
 chip8 = { path = "../../libs/chip8" }
+display = { path = "../../libs/display" }
+shared = { path = "../../libs/shared" }
+tracing-subscriber = { version = "0.3", features = [
+  "env-filter",
+  "json",
+  "time",
+] }
+tracing-appender = "0.2.3"
+thiserror = "1.0.64"
+log = "0.4.22"
+anyhow = "1.0.86"
+tokio = { version = "1.38.0", features = ["full"] }

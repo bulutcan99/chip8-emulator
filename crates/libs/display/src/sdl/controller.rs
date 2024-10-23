@@ -5,11 +5,11 @@ use shared::data::math_2d::Math2d;
 
 use super::emulator::Emulator;
 
-pub struct DisplayController<'a> {
+pub struct Controller<'a> {
     window: &'a mut CustomWindow<'a>,
 }
 
-impl<'a> DisplayController<'a> {
+impl<'a> Controller<'a> {
     pub fn new(window: &'a mut CustomWindow<'a>) -> Self {
         Self { window }
     }
