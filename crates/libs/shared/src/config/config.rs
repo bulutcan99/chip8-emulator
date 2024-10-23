@@ -1,23 +1,46 @@
-use lazy_static::lazy_static;
+use sdl2::pixels::Color;
 use serde_derive::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
-use crate::logger::logger;
-
 use super::environment::Environment;
 use super::error::ConfigError;
+use crate::logger::logger;
 
-lazy_static! {
-    static ref DEFAULT_FOLDER: PathBuf = PathBuf::from("configs");
+/// SerializableColor is a custom struct to allow serialization and deserialization of `sdl2::pixels::Color`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SerializableColor {
+    r: u8,
+    g: u8,
+    b: u8,
+    a: u8,
+}
+
+impl From<Color> for SerializableColor {
+    fn from(color: Color) -> Self {
+        SerializableColor {
+            r: color.r,
+            g: color.g,
+            b: color.b,
+            a: color.a,
+        }
+    }
+}
+
+impl From<SerializableColor> for Color {
+    fn from(serializable_color: SerializableColor) -> Self {
+        Color::RGBA(
+            serializable_color.r,
+            serializable_color.g,
+            serializable_color.b,
+            serializable_color.a,
+        )
+    }
 }
 
 /// Main application configuration structure.
-///
-/// This struct encapsulates various configuration settings. The configuration
-/// can be customized through YAML files for different environments.
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Config {
     pub app: App,
     pub logger: Logger,
@@ -56,88 +79,24 @@ pub struct LoggerFileAppender {
     pub max_log_files: usize,
 }
 
-/// EmuSettings configuration
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+/// EmuSettings configuration with `SerializableColor`
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EmuSettings {
     pub scale: u32,
     pub cycles_per_frame: u32,
-    pub bg_color: Color,
-    pub pixel_color: Color,
+    pub bg_color: SerializableColor,
+    pub pixel_color: SerializableColor,
     pub default_ch8_folder: String,
     pub st_equals_buzzer: bool,
     pub bit_shift_instructions_use_vy: bool,
     pub store_read_instructions_change_i: bool,
 }
 
-impl EmuSettings {
-    /// Function to create a new `EmuSettings` from default or YAML configuration.
-    pub fn new_from_yaml() -> Self {
-        let config = Config::get().chip8.clone();
-        config
-    }
-
-    pub fn get_bg_color(&self) -> Color {
-        self.bg_color.clone() // Color is Copy, but using clone for safety
-    }
-
-    pub fn get_cycles_per_frame(&self) -> u32 {
-        self.cycles_per_frame
-    }
-
-    pub fn get_default_ch8_folder(&self) -> &str {
-        &self.default_ch8_folder
-    }
-
-    pub fn get_pixel_color(&self) -> Color {
-        self.pixel_color.clone() // Same as bg_color
-    }
-
-    pub fn get_scale(&self) -> u32 {
-        self.scale
-    }
-
-    pub fn get_st_equals_buzzer(&self) -> bool {
-        self.st_equals_buzzer
-    }
-
-    pub fn get_bit_shift_instructions_use_vy(&self) -> bool {
-        self.bit_shift_instructions_use_vy
-    }
-
-    pub fn get_store_read_instructions_change_i(&self) -> bool {
-        self.store_read_instructions_change_i
-    }
-}
-
-/// Color struct for representing colors in the emulator.
-///
-/// This uses the RGBA model where each color component (red, green, blue, alpha)
-/// is represented by a value between 0 and 255.
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
-pub struct Color {
-    pub red: u8,
-    pub green: u8,
-    pub blue: u8,
-    pub alpha: u8,
-}
-
-impl Color {
-    /// Helper function to create a new `Color` with specified RGBA values.
-    pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        Color {
-            red,
-            green,
-            blue,
-            alpha,
-        }
-    }
-}
-
 /// Fetch config and initialize it from folder, for YAML loading
 static CONFIG: OnceLock<Config> = OnceLock::new();
 impl Config {
     pub fn new(env: &Environment) -> Result<Self, ConfigError> {
-        let config = Self::from_folder(env, DEFAULT_FOLDER.as_path())?;
+        let config = Self::from_folder(env, Path::new("configs"))?;
         CONFIG
             .set(config.clone())
             .map_err(|_| ConfigError::SettingsAlreadyInitialized)?;
