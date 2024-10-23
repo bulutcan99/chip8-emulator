@@ -8,8 +8,8 @@ logger:
   level: info
   # Define the logging format. options: compact, pretty or json
   format: compact
-  # By default, the logger has filtering only logs that came from your code or logs that came from loco framework. to see all third party libraries
-  # Uncomment the line below to override to see all third party libraries you can enable this config and override the logger filters.
+  # By default, the logger has filtering only logs that came from your code or logs that came from loco framework.
+  # To see all third party libraries uncomment the line below to override the logger filters.
   # override_filter: trace
 
 # Emulator settings configuration
@@ -28,13 +28,21 @@ chip8:
   # Max=99999
   cycles_per_frame: 20
 
-  # The color of the background (R,G,B format, 0 to 255).
-  # Default=0,0,0 (BLACK)
-  bg_color: "0,0,0"
+  # The color of the background (R,G,B,A format, 0 to 255).
+  # Default=0,0,0,255 (BLACK)
+  bg_color:
+    r: 0
+    g: 0
+    b: 0
+    a: 255
 
-  # The color of the pixels (R,G,B format, 0 to 255).
-  # Default=255,255,255 (WHITE)
-  pixel_color: "255,255,255"
+  # The color of the pixels (R,G,B,A format, 0 to 255).
+  # Default=255,255,255,255 (WHITE)
+  pixel_color:
+    r: 255
+    g: 255
+    b: 255
+    a: 255
 
   # The default folder where the CH8 (ROM) files are located.
   # It should be relative to the emulator's executable.
