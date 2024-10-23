@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Error};
-use sdl2::{EventPump, Sdl};
+use sdl2::{Sdl};
 
 pub struct SdlContext;
 
