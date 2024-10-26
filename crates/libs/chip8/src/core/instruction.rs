@@ -125,6 +125,7 @@ impl Instruction {
                 emu.set_v(0xF, if overflow { 0 } else { 1 })?;
                 emu.set_v(*x, result)?;
             }
+            // 0b0000_0001 & 0b0000_0001 -> 0b0000_0001
             Instruction::Op8XY6(x) => {
                 let vx = emu.get_v(*x)?;
                 let lsb = vx & 0b0000_0001;
