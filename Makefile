@@ -144,3 +144,12 @@ sqlx-migrate-revert:
 .PHONY: sqlx-prepare
 sqlx-prepare:
 	cargo sqlx prepare --database-url $(DB_URL)
+
+# PPROF OPERATIONS
+.PHONY: pprof-bin
+pprof-bin:
+	cargo flamegraph --bin $(BINARY_NAME)
+
+#.PHONY: pprof-open
+pprof-open:
+	cargo flamegraph --open --root 
