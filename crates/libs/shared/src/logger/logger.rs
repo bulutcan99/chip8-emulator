@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
 
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_variant::to_variant_name;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::fmt::MakeWriter;
@@ -68,7 +68,7 @@ impl std::fmt::Display for LogLevel {
 }
 
 // Function to initialize the logger based on the provided configuration
-const MODULE_WHITELIST: &[&str] = &["loco_rs", "sea_orm_migration", "tower_http", "sqlx::query"];
+const MODULE_WHITELIST: &[&str] = &[];
 
 // Keep nonblocking file appender work guard
 static NONBLOCKING_WORK_GUARD_KEEP: OnceLock<WorkerGuard> = OnceLock::new();

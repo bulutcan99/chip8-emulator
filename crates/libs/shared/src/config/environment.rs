@@ -28,6 +28,7 @@ impl Environment {
     pub fn from_env() -> Self {
         dotenv().ok();
         let env_var = env::var("ENVIRONMENT").unwrap_or_else(|_| DEFAULT_ENVIRONMENT.to_string());
+        println!("env_var: {}", env_var.clone());
         Self::from(env_var)
     }
 
