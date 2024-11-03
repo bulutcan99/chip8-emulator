@@ -152,4 +152,4 @@ pprof-bin:
 
 #.PHONY: pprof-open
 pprof-open:
-	cargo flamegraph --open --root 
+	cargo flamegraph --open --root 	cargo flamegraph --open --root 
