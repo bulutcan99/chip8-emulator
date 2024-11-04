@@ -266,6 +266,7 @@ dependencies = [
  "shared",
  "thiserror",
  "tokio",
+ "tracing",
  "tracing-appender",
  "tracing-subscriber",
 ]

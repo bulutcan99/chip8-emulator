@@ -68,7 +68,7 @@ impl std::fmt::Display for LogLevel {
 }
 
 // Function to initialize the logger based on the provided configuration
-const MODULE_WHITELIST: &[&str] = &[];
+const MODULE_WHITELIST: &[&str] = &["desktop", "shared", "chip8", "display"];
 
 // Keep nonblocking file appender work guard
 static NONBLOCKING_WORK_GUARD_KEEP: OnceLock<WorkerGuard> = OnceLock::new();

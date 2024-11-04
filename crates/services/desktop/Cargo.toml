@@ -7,6 +7,7 @@ edition = "2021"
 chip8 = { path = "../../libs/chip8" }
 display = { path = "../../libs/display" }
 shared = { path = "../../libs/shared" }
+tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = [
   "env-filter",
   "json",
